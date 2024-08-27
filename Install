@@ -1,0 +1,151 @@
+#!/bin/bash
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+
+function ErrorReturn(){
+echo -en "
+${white}————————————————————
+    脚本运行出现${red}错误$white,请及时${blue}截图${white},保存报错信息,
+    以与便开发者,${green}更好的${white}和${green}更快的${cyan}解决${white}问题.
+${white}————————————————————${background}"
+read
+return 1
+}
+function Universal(){
+  if ! bash ../Linux/NodeJS
+  then
+    ErrorReturn
+  fi  
+  if ! bash ../Linux/FFmpeg
+  then
+    ErrorReturn
+  fi
+  if ! bash ../Linux/Fonts
+  then
+    ErrorReturn
+  fi
+}
+
+if grep -i -q "Ubuntu" /etc/os-release
+then
+  if ! bash ../Linux/Ubuntu
+  then
+    ErrorReturn
+  fi
+  Universal
+elif grep -i -q "Debian" /etc/os-release
+then
+  if ! bash ../Linux/Debian
+  then
+    ErrorReturn
+  fi
+  Universal
+elif grep -i -q "CentOS" /etc/os-release
+then
+  if ! bash ../Linux/CentOS
+  then
+    ErrorReturn
+  fi
+  Universal
+elif grep -i -q "Arch" /etc/os-release
+then
+  if ! bash ../Linux/Arch
+  then
+    ErrorReturn
+  fi
+  Universal
+elif grep -i -q "Kali" /etc/os-release
+then
+  if ! bash ../Linux/Kali
+  then
+    ErrorReturn
+  fi
+  Universal
+elif grep -i -q "Alpine" /etc/os-release
+then
+  if ! bash ../Linux/Alpine
+  then
+    ErrorReturn
+  fi
+else
+  echo -e ${red}暂时不受支持的发行版${background}
+  exit 1
+fi
+
+function a(){
+if grep -i -q "Ubuntu" /etc/os-release
+then
+  if ! bash ../Linux/Ubuntu
+  then
+    ErrorReturn
+  fi
+  if ! bash ../Linux/Ubuntu
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Debian" /etc/os-release
+then
+  if ! bash ../Linux/Debian
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "CentOS" /etc/os-release
+then
+  if ! bash ../Linux/CentOS
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Arch" /etc/os-release
+then
+  if ! bash ../Linux/Arch
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Manjaro" /etc/os-release
+then
+  if ! bash ../Linux/Manjaro
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "openSUSE" /etc/os-release
+then
+  if ! bash ../Linux/openSUSE
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Fedora" /etc/os-release
+then
+  if ! bash ../Linux/Fedora
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Kali" /etc/os-release
+then
+  if ! bash ../Linux/Kali
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "Alpine" /etc/os-release
+then
+  if ! bash ../Linux/Alpine
+  then
+    ErrorReturn
+  fi
+elif grep -i -q "MSYS2" /etc/os-release
+then
+  if ! bash ../Linux/MSYS2
+  then
+    ErrorReturn
+  fi
+else
+  echo -e ${red}不受支持的发行版${background}
+  exit 1
+fi
+}

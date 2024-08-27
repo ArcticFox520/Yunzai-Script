@@ -1,0 +1,18 @@
+#!/bin/env bash
+source ../config
+Package=("tar" "gzip" "xz" "tmux" "screen" "wget" "curl" "pv" "git" "redis" 
+"jq" "nodejs-lts" "npm" "chromium")
+for PKG in ${Package[@]}
+do
+  Update apk update
+  if ! apk info -e ${PKG} >/dev/null 2>&1
+  then
+    echo -e ${green}正在安装 ${yellow}${PKG}${background}
+    until apk add --allow-untrusted  --no-cache ${PKG}
+    do
+      echo -e ${red}安装失败 3秒后重试${background}
+      sleep 3s
+    done
+    echo -e ${green}安装完成${background}
+  fi
+done

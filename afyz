@@ -1,0 +1,5 @@
+#!/bin/env bash
+export Path="$(pwd)"
+export AFHOME="AF_HOME_Path"
+cd ${AFHOME}/Manage
+bash Main "$@"

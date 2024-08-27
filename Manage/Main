@@ -1,0 +1,348 @@
+#!/bin/env bash
+source ../config
+
+function SecondMenu(){
+Number=$($(TUISoftware) \
+--title "${TitleText}" \
+--menu "$(MenuTips)" \
+$(MenuSize) \
+"1" "启动运行" \
+"2" "前台启动" \
+"3" "停止运行" \
+"4" "重新启动" \
+"5" "打开日志" \
+"6" "插件管理" \
+"7" "全部更新" \
+"8" "其他功能" \
+"9" "进入bash" \
+"0" "  返回  " \
+3>&1 1>&2 2>&3)
+case ${Number} in
+1)
+  if StartType ${BotName} ${COMMAND} ${Pm2Name}
+  then
+    if Error=$(ManageSession $(Session) start "${BotName}" "$(START '${StartCommand}' ${Pm2Name})")
+    then
+      if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
+      then
+        if $(TUISoftware) --title "${TitleText}"  \
+        --yes-button "打开日志" \
+        --no-button "返回菜单" \
+        --yesno "${BotName} [启动成功]" \
+        $(MsgboxSize) \
+        3>&1 1>&2 2>&3
+        then
+          if ! Error=$(ManageSession $(Session) log "${BotName}")
+          then
+            $(TUISoftware) --title "${TitleText}" \
+            --msgbox "${BotName} [打开失败] \n原因: ${Error}" \
+            $(MsgboxSize)
+            SecondMenu
+          fi
+        else
+          SecondMenu
+        fi
+      else
+        $(TUISoftware) --title "${TitleText}" \
+        --msgbox "${BotName} [启动失败] \n原因: ${Error}" \
+        $(MsgboxSize)
+        SecondMenu
+      fi
+    else
+      SecondMenu
+    fi
+  else
+    SecondMenu
+  fi
+;;
+2)
+  if StartType ${BotName} ${COMMAND} ${Pm2Name}
+  then
+    START "${StartCommand}" ${Pm2Name}
+  else
+    SecondMenu
+  fi
+;;
+3)
+  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  then
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "${BotName} [无法停止] \n原因: ${BotName} [未运行]" \
+    $(MsgboxSize)
+    SecondMenu
+  else
+    if Error=$(StopBot ${BotName} ${COMMAND} ${Pm2Name})
+    then
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "${BotName} [停止成功]" \
+      $(MsgboxSize)
+      SecondMenu
+    else
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "${BotName} [停止错误] \n原因: ${Error}" \
+      $(MsgboxSize)
+      SecondMenu
+    fi
+  fi
+;;
+4)
+  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  then
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "${BotName} [无法重启] \n原因: ${BotName} [未运行]" \
+    $(MsgboxSize)
+    SecondMenu
+  else
+    if Error=$(RestartBot ${BotName} ${COMMAND} ${Pm2Name})
+    then
+      if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
+      then
+        if $(TUISoftware) --title "${TitleText}"  \
+        --yes-button "打开日志" \
+        --no-button "返回菜单" \
+        --yesno "${BotName} [重启成功]" \
+        $(MsgboxSize) \
+        3>&1 1>&2 2>&3
+        then
+          if ! Error=$(ManageSession $(Session) log "${BotName}")
+          then
+            $(TUISoftware) --title "${TitleText}" \
+            --msgbox "${BotName} [打开失败] \n原因: ${Error}" \
+            $(MsgboxSize)
+            SecondMenu
+          fi
+        else
+          SecondMenu
+        fi
+      else
+        $(TUISoftware) --title "${TitleText}" \
+        --msgbox "${BotName} [启动失败] \n原因: ${Error}" \
+        $(MsgboxSize)
+        SecondMenu
+      fi
+    else
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "${BotName} [重启错误] \n原因: ${Error}" \
+      $(MsgboxSize)
+      SecondMenu
+    fi
+  fi
+;;
+5)
+  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  then
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "${BotName} 日志 [无法打开] \n原因: ${BotName} [未运行]" \
+    $(MsgboxSize)
+    SecondMenu
+  else
+    if ! Error=$(LogBot ${BotName} ${COMMAND} ${Pm2Name})
+    then
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "${BotName} [错误] \n原因: ${Error}" \
+      $(MsgboxSize)
+      SecondMenu
+    fi
+  fi
+;;
+6)
+  case $(jq .name package.json) in
+  "yunzai-next")
+    bash ${AFHOME}/Manage/YN-Plugin
+    SecondMenu
+    ;;
+  "miao-yunzai")
+    bash ${AFHOME}/Manage/Plugin
+    SecondMenu
+    ;;
+  "trss-yunzai")
+    bash ${AFHOME}/Manage/Plugin
+    SecondMenu
+    ;;
+  esac
+;;
+7)
+  echo -e ${yellow}正在更新 ${yellow}${BotName}${background}
+  if git pull --force
+  then
+    echo -e ${yellow}${BotName} ${green}更新完成${background}
+  else
+    echo -e ${yellow}${BotName}${red}更新失败${background}
+  fi
+  for i in $(ls plugins)
+  do
+    if [ -e plugins/${i}/.git/config ]
+    then
+      cd plugins/${i}
+      echo -e ${yellow}正在更新 ${cyan}${i}${background}
+      if git pull --force
+      then
+        echo -e ${yellow}${i} ${green}更新完成${background}
+      else
+        echo -e ${yellow}${i} ${red}更新失败${background}
+      fi
+    fi
+  done
+;;
+8)
+  case $(jq .name package.json) in
+  "yunzai-next")
+    bash ${AFHOME}/Manage/Function ${TitleText}
+    SecondMenu
+    ;;
+  "miao-yunzai")
+    bash ${AFHOME}/Manage/Function ${TitleText}
+    SecondMenu
+    ;;
+  "trss-yunzai")
+    bash ${AFHOME}/Manage/Function ${TitleText}
+    SecondMenu
+    ;;
+  esac
+;;
+9)
+  exec bash
+  SecondMenu
+;;
+0)
+  return 5
+;;
+esac
+}
+function Install(){
+case $1 in
+MZ)
+  if ! bash ../Install
+  then
+    exit 1
+  fi
+  source ../config
+  if ! bash ../Linux/Pnpm
+  then
+    exit 1
+  fi
+  if ! bash ../Linux/GitBot MZ
+  then
+    exit 1
+  fi
+;;
+TZ)
+  if ! bash ../Install
+  then
+    exit 1
+  fi
+  source ../config
+  if ! bash ../Linux/Pnpm
+  then
+    exit 1
+  fi
+  if ! bash ../Linux/GitBot TZ
+  then
+    exit 1
+  fi
+;;
+YN)
+  if ! bash ../Install
+  then
+    exit 1
+  fi
+  source ../config
+  if ! bash ../Linux/Yarn
+  then
+    exit 1
+  fi
+  if ! bash ../Linux/GitBot YN
+  then
+    exit 1
+  fi
+;;
+esac
+}
+function MainMenu(){
+Number=$($(TUISoftware) \
+--title "AF-Shell" \
+--menu "$(MenuTips)" \
+$(MenuSize) \
+"1" "Yunzai-Next" \
+"0" " 退出脚本 " \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 5
+fi
+case ${Number} in
+  1)
+    if CheckInstall YN
+    then
+      TitleText="AF-YZ-Next"
+      BotName="Yunzai-Next"
+      COMMAND="YZ-NEXT"
+      StartCommand="node src/main"
+      Pm2Name="yunzai-next"
+      SecondMenu
+    else
+      Install YN
+      TitleText="AF-YZ-Next"
+      BotName="Yunzai-Next"
+      COMMAND="YZ-NEXT"
+      StartCommand="node src/main"
+      Pm2Name="yunzai-next"
+      SecondMenu
+    fi
+    ;;
+  2)
+    if CheckInstall MZ
+    then
+      TitleText="AF-MZ"
+      BotName="Miao-Yunzai"
+      COMMAND="Miao-Yun"
+      StartCommand="node app"
+      Pm2Name="Miao-Yunzai"
+      SecondMenu
+    else
+      Install YN
+      TitleText="AF-MZ"
+      BotName="Miao-Yunzai"
+      COMMAND="Miao-Yun"
+      StartCommand="node app"
+      Pm2Name="Miao-Yunzai"
+      SecondMenu
+    fi
+  ;;
+  3)
+    if CheckInstall TZ
+    then
+      TitleText="AF-TZ"
+      BotName="TRSS-Yunzai"
+      COMMAND="TRSS Yunzai"
+      StartCommand="node app"
+      Pm2Name="TRSS-Yunzai"
+      SecondMenu
+    else
+      Install YN
+      TitleText="AF-TZ"
+      BotName="TRSS-Yunzai"
+      COMMAND="TRSS Yunzai"
+      StartCommand="node app"
+      Pm2Name="TRSS-Yunzai"
+      SecondMenu
+    fi
+  ;;
+  0)
+    return 5
+  ;;
+esac
+}
+
+function WhileMainMenu(){
+  while true
+  do
+    MainMenu
+    if [ $? == 5 ]
+    then
+      exit 0
+    fi
+    WhileMainMenu
+  done
+}
+WhileMainMenu

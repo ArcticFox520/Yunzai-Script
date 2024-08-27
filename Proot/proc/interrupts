@@ -1,0 +1,35 @@
+           CPU0       CPU1       CPU2       CPU3       
+  0:          3          0          0          0   IO-APIC   2-edge      timer
+  1:          0          0       3114          0   IO-APIC   1-edge      i8042
+  7:          0          0          0          0   IO-APIC   7-edge      parport0
+  8:          0          0          0          1   IO-APIC   8-edge      rtc0
+  9:          0          0          0          0   IO-APIC   9-fasteoi   acpi
+ 10:         65          0          0          0   IO-APIC  10-fasteoi   uhci_hcd:usb1
+ 11:          0          0          0       5203   IO-APIC  11-fasteoi   wifi_eth
+ 12:          0      18162          0          0   IO-APIC  12-edge      i8042
+ 14:          0          0      20922          0   IO-APIC  14-edge      ata_piix
+ 15:          0          0          0         46   IO-APIC  15-edge      ata_piix
+ 24:          0          0          0          0   PCI-MSI 65536-edge      virtio0-config
+ 25:          0          0          0          0   PCI-MSI 65537-edge      virtio0-requests
+NMI:          0          0          0          0   Non-maskable interrupts
+LOC:     205512     188686     205839     182483   Local timer interrupts
+SPU:          0          0          0          0   Spurious interrupts
+PMI:          0          0          0          0   Performance monitoring interrupts
+IWI:       1739       1317       1581         88   IRQ work interrupts
+RTR:          0          0          0          0   APIC ICR read retries
+RES:     170823     155138     167294     126614   Rescheduling interrupts
+CAL:      30916      24621      31703      27234   Function call interrupts
+TLB:       6618       7229       7738       6132   TLB shootdowns
+TRM:          0          0          0          0   Thermal event interrupts
+THR:          0          0          0          0   Threshold APIC interrupts
+DFR:          0          0          0          0   Deferred Error APIC interrupts
+MCE:          0          0          0          0   Machine check exceptions
+MCP:          7          7          7          7   Machine check polls
+HYP:          0          0          0          0   Hypervisor callback interrupts
+HRE:          0          0          0          0   Hyper-V reenlightenment interrupts
+HVS:          0          0          0          0   Hyper-V stimer0 interrupts
+ERR:          0
+MIS:          0
+PIN:          0          0          0          0   Posted-interrupt notification event
+NPI:          0          0          0          0   Nested posted-interrupt event
+PIW:          0          0          0          0   Posted-interrupt wakeup event

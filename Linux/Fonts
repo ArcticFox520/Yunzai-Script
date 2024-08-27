@@ -1,0 +1,21 @@
+#!/bin/env bash
+source ../config
+if [ -e /usr/share/fonts/lxgw-wenkai/LXGWWenKaiScreen.ttf ]
+then
+  exit 0
+fi
+if ! CheckNetwork
+then
+  unset GithubMirror
+fi
+FontsURL="${GithubMirror}https://github.com/lxgw/LxgwWenKai-Screen/releases/latest/download/LXGWWenKaiScreen.ttf"
+echo -e ${green}正在安装 ${yellow}中文字体${background}
+Download LXGWWenKaiScreen.ttf ${FontsURL}
+if [ ! -d /usr/share/fonts/lxgw-wenkai ]
+then
+  mkdir -p /usr/share/fonts/lxgw-wenkai
+fi
+mv -vf LXGWWenKaiScreen.ttf /usr/share/fonts/lxgw-wenkai/LXGWWenKaiScreen.ttf
+echo -e ${yellow}正在加载字体${background}
+fc-cache -f
+echo -e ${yellow}完成${background}

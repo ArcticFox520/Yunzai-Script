@@ -1,0 +1,65 @@
+#!/bin/env bash
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+
+if ! grep -q bfsu $PREFIX/etc/apt/sources.list
+then
+  echo '# The termux repository mirror from BFSU:
+deb https://mirrors.bfsu.edu.cn/termux/apt/termux-main stable main' \
+> $PREFIX/etc/apt/sources.list
+  apt -y update
+  yes Y | apt -y upgrade
+  echo '# The termux repository mirror from BFSU:
+deb https://mirrors.bfsu.edu.cn/termux/apt/termux-main stable main' \
+> $PREFIX/etc/apt/sources.list
+fi
+echo -e ${yellow}正在安装依赖${background}
+pkg_list=("tar" "xz-utils" "gzip" \
+"pv" "wget" "curl" \
+"git" "jq" "x11-repo" \
+"tur-repo" "nodejs-lts" "ffmpeg" \
+"redis")
+for package in ${pkg_list[@]}
+do
+  if [ -x "$(command -v apt)" ];then
+    if ! dpkg -s "${package}" > /dev/null 2>&1;then
+        apt install -y ${package}
+    fi
+  fi
+done
+echo -e ${yellow}正在更新 ${cyan}软件源${background}
+apt -y update
+echo -e ${yellow}正在安装 ${cyan}chromium${background}
+apt install -y chromium
+if CheckNetwork
+then
+  NPMMirror="https://registry.npmmirror.com"
+  
+else
+  NPMMirror="https://registry.npmjs.org"
+fi
+echo -e ${yellow}正在设置NPM ${cyan}默认仓库${background}
+npm config set registry ${NPMMirror}
+npm config set registry ${NPMMirror}
+npm install -g npm@latest
+echo -e ${yellow}已设置为 ${cyan}${NPMMirror}${background}
+echo -e ${yellow}正在安装 ${cyan}PNPM${background}
+npm install -g pnpm
+echo -e ${yellow}正在设置PNPM ${cyan}默认仓库${background}
+pnpm config set registry ${NPMMirror}
+pnpm config set registry ${NPMMirror}
+echo -e ${green}已设置为 ${yellow}${NPMMirror}${background}
+echo -e ${green}正在安装 ${yellow}PM2${background}
+until npm install -g pm2
+do
+  echo -e ${cyan}安装失败 ${yellow}三秒后重试${background}
+  sleep 3s
+done
+echo -e ${green}安装完成${background}

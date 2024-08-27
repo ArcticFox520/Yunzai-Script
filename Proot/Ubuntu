@@ -1,0 +1,238 @@
+#!/bin/env bash
+#
+# 此脚本欢迎各位脚本作者借鉴,但请勿删除作者标识
+# 此脚本作者 ArcticFox Q群 705226976
+cd $HOME
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+echo
+Linux="ubuntu"
+Version="jammy"
+GithubMirror="https://mirrors.chenby.cn/"
+
+if [ ! "$(uname -o)" = "Android" ]
+then
+	echo -e ${blue}[${red}*${blue}] ${cyan}错误 ${yellow}此脚本仅能够在termux运行${background}
+fi
+
+case `dpkg --print-architecture` in
+aarch64|arm64)
+	Arch="arm64"
+	;;
+*)
+	echo -e ${red}本脚本仅适配 Arm64${background}
+	exit
+esac
+FOLDER="${Linux}-${Version}"
+RootfsName="rootfs-${Linux}-${Linux}.tar.xz"
+
+TUNA_URL="https://mirrors.tuna.tsinghua.edu.cn/lxc-images/images/${Linux}/${Version}/${Arch}/default/"
+BFSU_URL="https://mirrors.bfsu.edu.cn/lxc-images/images/${Linux}/${Version}/${Arch}/default/"
+NJU_URL="https://mirror.nju.edu.cn/lxc-images/images/${Linux}/${Version}/${Arch}/default/"
+
+echo -e ${blue}[${green}*${blue}] ${cyan}开始安装 ${yellow} ${FOLDER}${background}
+
+if [ -d $HOME/AF-Proot/${FOLDER} ]
+then
+  echo -e ${red}您已安装 ${cyan}${FOLDER}${background}
+  exit
+fi
+
+pkg_install="apt install -y"
+function pkg_install(){
+local i=0
+echo -e ${yellow}安装软件 ${pkg}${background}
+until ${pkg_install} ${pkg}
+do
+    if [ ${i} -eq 3 ]
+        then
+            echo -e ${red}错误次数过多 退出${background}
+            exit
+    fi
+    i=$((${i}+1))
+    echo -en ${red}命令执行失败 ${green}3秒后重试${background}
+    sleep 3s
+    echo
+done
+}
+pkg_list=("tar" "xz-utils" "gzip" "pv" "wget" "curl" "neofetch" "pulseaudio" "proot" "git")
+for package in ${pkg_list[@]}
+do
+  if [ -x "$(command -v apt)" ];then
+    if ! dpkg -s "${package}" > /dev/null 2>&1;then
+        pkg="${package} ${pkg}"
+    fi
+  fi
+done
+if [ ! -z "${pkg}" ];then
+  if [ -x "$(command -v apt)" ];then
+    apt update -y
+    pkg_install
+  fi
+fi
+
+function Download(){
+file="$1"
+URL="$2"
+local i=0
+if wget --help | grep -q show-progress 
+then
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -q --show-progress -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((${i}+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+else
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((i+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+fi
+}
+
+URL=(${TUNA_URL} ${BFSU_URL} ${NJU_URL})
+Site=("TUNA" "BFSU" "NJU")
+
+if [ ! -d AF-Proot/${FOLDER} ]
+then
+  mkdir -p $HOME/AF-Proot/${FOLDER}
+fi
+
+for Download_URL in ${URL[@]}
+do
+  for Download_Source in ${Site[@]}
+  do
+    date=$(curl ${Download_URL} | grep -oP '(?<=title=")[^"]+(?=">)' | tail -n 1)
+    if Download rootfs.tar.xz "${Download_URL}/${date}/rootfs.tar.xz"
+    then
+      mv -f rootfs.tar.xz $HOME/AF-Proot/${RootfsName}
+      break 2
+    else
+      rm $HOME/AF-Proot/${RootfsName}
+      echo -e ${blue}[${yellow}*${blue}] ${red}下载出错${cyan} 更换下载源为 ${purple}${Download_Source}${cyan}${background}
+      echo -e ${blue}[${green}*${blue}] ${yellow}重试中.${background}
+    fi
+  done
+done
+
+if [ -e $HOME/AF-Proot/${RootfsName} ]
+then
+  cd $HOME/AF-Proot
+  echo -e ${blue}[${green}*${blue}]${cyan} 正在解压 [进度条可能会卡在100% 请耐心等待]${background}
+  pv $HOME/AF-Proot/${RootfsName} | proot --link2symlink tar -xJf - -C $HOME/AF-Proot/${FOLDER} > /dev/null 2>&1 ||:
+else
+  exit
+fi
+
+if [ -d $HOME/AFProotFile ]
+then
+  rm -rf $HOME/AFProotFile
+fi
+
+if git clone --depth=1 ${GithubMirror}https://github.com/ArcticFox520/ $HOME/AFProotFile
+then
+  mv $HOME/AFProotFile/Proot/Install $HOME/AF-Proot/${Linux}-${Version}/root/Install
+  mkdir /data/data/com.termux/files/home/AF-Proot/proc/
+  mv -f $HOME/AFProotFile/Proot/proc/* $HOME/AF-Proot/proc/
+  mv -f $HOME/AFProotFile/Proot/.hushlogin $HOME/AF-Proot/.hushlogin
+  rm -rf $HOME/AFProotFile
+else
+  echo -e ${blue}[${red}*${blue}] 文件拉取失败.${background}
+  exit
+fi
+# 创建启动脚本
+start=start-${Linux}-${Version}.sh
+rm $HOME/.bashrc
+touch $HOME/.bashrc
+echo "exec $HOME/AF-Proot/start-${Linux}-${Version}.sh 'afyz'" > $HOME/.bashrc
+cat > $start <<- FOX
+#!/bin/bash
+echo -e "${blue}[${yellow}*${blue}] ${cyan}正在启动 ${Linux}-${Version}${background}"
+echo -e "${blue}[${yellow}*${blue}] ${cyan}正在启动脚本${background}"
+cd \$(dirname \$0)
+pulseaudio --start
+## Chroot : pulseaudio --start --system
+unset LD_PRELOAD
+command="proot"
+command+=" --link2symlink"
+command+=" -0"
+command+=" -r $HOME/AF-Proot/${Linux}-${Version}"
+command+=" -b /dev"
+command+=" -b /proc"
+command+=" -b $HOME/AF-Proot/${Linux}-${Version}/root:/dev/shm"
+command+=" -b /sdcard:/sdcard"
+command+=" -b $HOME/AF-Proot/.hushlogin:/root/.hushlogin"
+command+=" -b $HOME/AF-Proot/proc/buddyinfo:/proc/buddyinfo"
+command+=" -b $HOME/AF-Proot/proc/cgroups:/proc/cgroups"
+command+=" -b $HOME/AF-Proot/proc/consoles:/proc/consoles"
+command+=" -b $HOME/AF-Proot/proc/crypto:/proc/crypto"
+command+=" -b $HOME/AF-Proot/proc/devices:/proc/devices"
+command+=" -b $HOME/AF-Proot/proc/diskstats:/proc/diskstats"
+command+=" -b $HOME/AF-Proot/proc/execdomains:/proc/execdomains"
+command+=" -b $HOME/AF-Proot/proc/fb:/proc/fb"
+command+=" -b $HOME/AF-Proot/proc/filesystems:/proc/filesystems"
+command+=" -b $HOME/AF-Proot/proc/interrupts:/proc/interrupts"
+command+=" -b $HOME/AF-Proot/proc/iomem:/proc/iomem"
+command+=" -b $HOME/AF-Proot/proc/ioports:/proc/ioports"
+command+=" -b $HOME/AF-Proot/proc/kallsyms:/proc/kallsyms"
+command+=" -b $HOME/AF-Proot/proc/keys:/proc/keys"
+command+=" -b $HOME/AF-Proot/proc/key-users:/proc/key-users"
+command+=" -b $HOME/AF-Proot/proc/kpageflags:/proc/kpageflags"
+command+=" -b $HOME/AF-Proot/proc/loadavg:/proc/loadavg"
+command+=" -b $HOME/AF-Proot/proc/locks:/proc/locks"
+command+=" -b $HOME/AF-Proot/proc/misc:/proc/misc"
+command+=" -b $HOME/AF-Proot/proc/modules:/proc/modules"
+command+=" -b $HOME/AF-Proot/proc/pagetypeinfo:/proc/pagetypeinfo"
+command+=" -b $HOME/AF-Proot/proc/partitions:/proc/partitions"
+command+=" -b $HOME/AF-Proot/proc/sched_debug:/proc/sched_debug"
+command+=" -b $HOME/AF-Proot/proc/softirqs:/proc/softirqs"
+command+=" -b $HOME/AF-Proot/proc/timer_list:/proc/timer_list"
+command+=" -b $HOME/AF-Proot/proc/uptime:/proc/uptime"
+command+=" -b $HOME/AF-Proot/proc/version:/proc/version"
+command+=" -b $HOME/AF-Proot/proc/vmallocinfo:/proc/vmallocinfo"
+command+=" -b $HOME/AF-Proot/proc/vmstat:/proc/vmstat"
+command+=" -b $HOME/AF-Proot/proc/zoneinfo:/proc/zoneinfo"
+command+=" -w /root"
+command+=" /usr/bin/env -i"
+command+=" HOME=/root"
+command+=" PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games"
+command+=" TERM=\$TERM"
+command+=" LANG=zh_CN.UTF-8"
+command+=" /bin/bash --login"
+com="\$@"
+if [ -z "\$1" ];then
+    exec \$command
+else
+    \$command -c "\$com"
+fi
+FOX
+chmod +x "$HOME/AF-Proot/start-${Linux}-${Version}.sh"
+neofetch --ascii_distro ${Linux}
+$HOME/AF-Proot/start-ubuntu-jammy.sh 'bash Install'
+exec $HOME/AF-Proot/start-ubuntu-jammy.sh 'afyn'

@@ -1,0 +1,18 @@
+#!/bin/env bash
+source ../config
+Package=("tar" "gzip" "xz-utils" "tmux" "screen" "wget" "curl" "pv" "git" "redis-server" "jq" "chromium")
+for PKG in ${Package[@]}
+do
+  Update apt -y update
+  if ! dpkg -s ${PKG} >/dev/null 2>&1
+  then
+    echo -e ${green}正在安装 ${yellow}${PKG}${background}
+    apt_update
+    until apt install -y ${PKG}
+    do
+      echo -e ${red}安装失败 3秒后重试${background}
+      sleep 3s
+    done
+    echo -e ${green}安装完成${background}
+  fi
+done

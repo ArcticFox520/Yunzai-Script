@@ -1,0 +1,21 @@
+ 52 memory_bandwidth
+ 53 network_throughput
+ 54 network_latency
+ 55 cpu_dma_latency
+ 56 xt_qtaguid
+ 57 vndbinder
+ 58 hwbinder
+ 59 binder
+ 60 ashmem
+239 uhid
+236 device-mapper
+223 uinput
+  1 psaux
+200 tun
+237 loop-control
+ 61 lightnvm
+228 hpet
+229 fuse
+242 rfkill
+ 62 ion
+ 63 vga_arbiter

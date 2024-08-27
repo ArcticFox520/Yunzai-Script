@@ -1,0 +1,38 @@
+00000000-00000fff : Reserved
+00001000-0009ffff : System RAM
+000a0000-000bffff : PCI Bus 0000:00
+000f0000-000fffff : System ROM
+00100000-007fffff : System RAM
+00800000-00807fff : ACPI Non-volatile Storage
+00808000-0080ffff : System RAM
+00810000-008fffff : ACPI Non-volatile Storage
+00900000-7ed29fff : System RAM
+  4d000000-4dc02fff : Kernel code
+  4dc03000-4e3274ff : Kernel data
+  4e4b1000-4e5fffff : Kernel bss
+7ed2a000-7edeafff : Reserved
+7edeb000-7f8eefff : System RAM
+7f8ef000-7f9eefff : Reserved
+7f9ef000-7faeefff : Unknown E820 type
+7faef000-7fb6efff : Reserved
+7fb6f000-7fb7efff : ACPI Tables
+7fb7f000-7fbfefff : ACPI Non-volatile Storage
+7fbff000-7ff3ffff : System RAM
+7ff40000-7ff5ffff : Reserved
+7ff60000-7fffffff : ACPI Non-volatile Storage
+80000000-febfffff : PCI Bus 0000:00
+  80000000-83ffffff : 0000:00:02.0
+  84000000-87ffffff : 0000:00:02.0
+    84000000-841dffff : efifb
+  88000000-8803ffff : 0000:00:03.0
+  88040000-8805ffff : 0000:00:03.0
+    88040000-8805ffff : e1000
+  88060000-88061fff : 0000:00:02.0
+  88062000-88062fff : 0000:00:04.0
+fec00000-fec003ff : IOAPIC 0
+fed00000-fed003ff : HPET 0
+  fed00000-fed003ff : PNP0103:00
+fee00000-fee00fff : Local APIC
+800000000-87fffffff : PCI Bus 0000:00
+  800000000-800003fff : 0000:00:04.0
+    800000000-800003fff : virtio-pci-modern

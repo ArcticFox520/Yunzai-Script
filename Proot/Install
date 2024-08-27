@@ -1,0 +1,212 @@
+#!/bin/env bash
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+
+GithubMirror="https://mirrors.chenby.cn/"
+
+function Download(){
+file="$1"
+URL="$2"
+local i=0
+if wget --help | grep -q show-progress 
+then
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -q --show-progress -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((${i}+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+else
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((i+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+fi
+}
+
+echo -e ${green}正在修改 ${yellow}DNS配置${background}
+rm /etc/resolv.conf
+echo 'nameserver 223.5.5.5
+nameserver 223.6.6.6
+nameserver 2400:3200::1
+nameserver 2400:3200:baba::1' > /etc/resolv.conf
+cat /etc/resolv.conf
+echo -e ${green}已修改为 ${yellow}阿里DNS${background}
+
+OldSourcesURL="ports.ubuntu.com"
+NewSourcesURL="mirrors.tuna.tsinghua.edu.cn"
+
+echo -e 执行系统优化步骤
+# 更换源
+sed -i "s|${OldSourcesURL}|${NewSourcesURL}|g" /etc/apt/sources.list
+
+# 更新系统
+echo -e ${green}apt ${yellow}-y ${blue}update${background}
+apt -y update
+echo -e ${green}apt ${yellow}-y ${blue}upgrade${background}
+apt -y upgrade
+
+if ! grep -q 'https' /etc/apt/sources.list
+then
+  # 启用https
+  echo -e ${white}正在将${green}http源替换为${purple}https源${background}
+  sed -i "s|http|https|g" /etc/apt/sources.list
+  apt -y update
+fi
+
+echo -e ${green}apt ${yellow}-y ${blue}dist-upgrade${background}
+apt -y dist-upgrade
+
+echo -e ${green}正在修改 ${yellow}时区配置${background}
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+sed -i '1s/^/Asia\/Shanghai/g' /etc/timezone
+dpkg-reconfigure --frontend noninteractive tzdata
+echo -e ${green}已修改为 ${yellow}Asia/Shanghai${background}
+
+echo -e ${green}正在修改 ${yellow}默认语言${background}
+apt install -y locales-all
+apt install -y ^language-pack-zh
+update-locale LANG=zh_CN.UTF-8
+source /etc/default/locale
+export LANG=zh_CN.UTF-8
+echo -e ${green}已修改为 ${yellow}中文${background}
+
+echo -e ${green}正在安装 ${yellow}依赖软件${background}
+apt install -y tar gzip xz-utils tmux screen curl wget pv git redis-server jq fonts-wqy*
+echo -e ${green}安装完成${background}
+
+echo -e ${green}开始安装 ${yellow}Chromium${background}
+SourcesListFile="/etc/apt/sources.list.d/xtradeb-ubuntu-apps-jammy.list"
+SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ $1 main"
+GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
+GpgFileURL="https://pgp.mit.edu/pks/lookup?op=get&search=0x5301FA4FD93244FBC6F6149982BB6851C64F6880"
+echo ${SourcesList} > ${SourcesListFile}
+Download xtradeb-ubuntu-apps.gpg ${GpgFileURL}
+gpg --dearmor -o ${GpgFilePath} xtradeb-ubuntu-apps.gpg
+apt -y update
+apt install -y chromium
+echo -e ${green}安装完成${background}
+
+echo -e ${green}正在获取 ${yellow}JSON信息${background}
+i=0
+until length=$(curl https://registry.npmmirror.com/-/binary/node/latest-v20.x/ | jq '. | length')
+do
+  if [ ${i} == 3 ]
+  then
+    echo -e ${cyan}错误次数过多 ${yellow}退出${background}
+    exit
+  fi
+  i=$((${i}+1))
+  echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
+  sleep 3s
+done
+length=$(expr ${length} - 8)
+
+echo -e ${green}正在获取 ${yellow}NodeJS版本信息${background}
+i=0
+until NodeVersion=$(curl https://registry.npmmirror.com/-/binary/node/latest-v20.x/ | jq .[${length}] | jq .name | sed 's|\"node-||g' | sed 's|.tar.xz\"||g')
+do
+  if [ ${i} == 3 ]
+  then
+    echo -e ${cyan}错误次数过多 ${yellow}退出${background}
+    exit
+  fi
+  i=$((${i}+1))
+  echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
+  sleep 3s
+done
+
+NodeJS_URL="https://registry.npmmirror.com/-/binary/node/latest-v20.x/node-${NodeVersion}-linux-arm64.tar.xz"
+
+Download NodeJS.tar.xz ${NodeJS_URL}
+
+mkdir NodeJS
+pv NodeJS.tar.xz | tar -Jxf - -C NodeJS
+rm -rf /usr/local/NodeJS > /dev/null 2>&1
+mv NodeJS/$(ls NodeJS) /usr/local/NodeJS
+rm -rf NodeJS.tar.xz NodeJS
+mkdir -p /root/.local/share/pnpm
+echo '
+#Node.JS
+export PATH=$PATH:/usr/local/NodeJS/bin
+' >> /etc/profile
+
+echo -e ${green}NodeJS ${yellow}安装完成${background}
+
+export PATH=$PATH:/usr/local/NodeJS/bin
+
+echo -e ${green}正在设置NPM ${yellow}默认仓库${background}
+NPMMirror="https://registry.npmmirror.com"
+npm config set registry ${NPMMirror}
+npm config set registry ${NPMMirror}
+npm install -g npm@latest
+echo -e ${green}已设置为 ${yellow}npmmirror${background}
+
+echo -e ${green}正在安装 ${yellow}YARN${background}
+npm install -g yarn
+echo -e ${green}正在设置PNPM ${yellow}默认仓库${background}
+yarn config set registry ${NPMMirror}
+yarn config set registry ${NPMMirror}
+echo -e ${green}已设置为 ${yellow}npmmirror${background}
+
+echo -e ${green}正在安装 ${yellow}PNM2${background}
+until yarn install -g pm2
+do
+  echo -e ${cyan}安装失败 ${yellow}三秒后重试${background}
+  sleep 3s
+done
+echo -e ${green}安装完成${background}
+
+echo -e ${green}正在安装 ${yellow}yq${background}
+URL="https://mirrors.chenby.cn/https://github.com/mikefarah/yq/releases/download/v4.44.2/yq_linux_arm64"
+Download yq ${URL}
+mv yq /usr/local/bin/yq
+chmod +x /usr/local/bin/yq
+echo -e ${green}安装完成${background}
+
+echo -e ${green}正在安装 ${yellow}ffmpeg${background}
+ffmpeg_URL=https://registry.npmmirror.com/-/binary/ffmpeg-static/b6.0
+Download ffmpeg ${ffmpeg_URL}/ffmpeg-linux-arm64
+Download ffprobe ${ffmpeg_URL}/ffprobe-linux-arm64
+chmod +x ffmpeg ffprobe
+mv -f ffmpeg /usr/local/bin/ffmpeg
+mv -f ffprobe /usr/local/bin/ffprobe
+echo -e ${green}安装完成${background}
+
+echo -e ${green}开始安装 ${yellow}ArcticFox Script${background}
+until git clone --depth=1 https://mirrors.chenby.cn/https://github.com/ArcticFox520/Yunzai-Next-Script ./AFYN
+do
+  echo -e ${red} - ${red}克隆错误 ${cyan}3秒后重试${background}
+  sleep 3s
+done
+cd AFYN
+chmod +x afyn
+AF_HOME_Path="$(pwd)"
+sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" afyn
+mv -f afyz /usr/local/bin/afyn
+echo -e ${yellow} - ${yellow}安装成功${background}

@@ -1,0 +1,17 @@
+#!/bin/env bash
+source ../config
+Package=("tar" "gzip" "xz" "tmux" "screen" "wget" "curl" "pv" "git" "redis" "jq" "chromium")
+for PKG in ${Package[@]}
+do
+  Update pacman -Syyu --noconfirm --needed
+  if ! pacman -Q ${PKG} >/dev/null 2>&1
+  then
+    echo -e ${green}正在安装 ${yellow}${PKG}${background}
+    until pacman -S --noconfirm --needed ${PKG}
+    do
+      echo -e ${red}安装失败 3秒后重试${background}
+      sleep 3s
+    done
+    echo -e ${green}安装完成${background}
+  fi
+done

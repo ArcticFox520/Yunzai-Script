@@ -1,0 +1,24 @@
+#!/bin/env bash
+source ../config
+if [ -e /usr/local/bin/ffmpeg ]
+then
+  exit 0
+fi
+if CheckNetwork
+then
+  FFmpegURL="https://registry.npmmirror.com/-/binary/ffmpeg-static/b6.0/ffmpeg-linux-$(Arch)"
+  FFprobeURL="https://registry.npmmirror.com/-/binary/ffmpeg-static/b6.0/ffprobe-linux-$(Arch)"
+  Download ffmpeg ${FFmpegURL}
+  Download ffprobe ${FFprobeURL}
+  chmod +x ffmpeg ffprobe
+  mv -f ffmpeg /usr/local/bin/ffmpeg
+  mv -f ffprobe /usr/local/bin/ffprobe
+else
+  FFmpegURL="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linu$(Arch)-gpl.tar.xz"
+  Download ffmpeg.tar.xz ${FFmpegURL}
+  mkdir ffmpeg
+  pv ffmpeg.tar.xz | tar -Jxf - -C ffmpeg
+  chmod +x ffmpeg/$(ls ffmpeg)/*
+  mv -f ffmpeg/$(ls ffmpeg)/bin/ff* /usr/local/bin/
+  rm -rf ffmpeg*
+fi

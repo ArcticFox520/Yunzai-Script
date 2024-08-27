@@ -1,0 +1,89 @@
+#!/bin/env bash
+source ../config
+Package=("tar" "gzip" "xz-utils" "tmux" "screen" "wget" "curl" "pv" "git" "redis-server" "jq")
+for PKG in ${Package[@]}
+do
+  Update apt -y update
+  if ! dpkg -s ${PKG} > /dev/null 2>&1
+  then
+    echo -e ${green}正在安装 ${yellow}${PKG}${background}
+    until apt install -y ${PKG}
+    do
+      echo -e ${red}安装失败 3秒后重试${background}
+      sleep 3s
+    done
+    echo -e ${green}安装完成${background}
+  fi
+done
+if command -v chromium > /dev/null 2>&1
+then
+  exit 0
+elif command -v chromium-browser > /dev/null 2>&1
+then
+  exit 0
+fi
+case `dpkg --print-architecture` in
+aarch64|arm64)
+	Arch="arm64"
+	;;
+x86_64|x64|amd64)
+	Arch1="x64"
+	;;
+*)
+	echo -e ${red}暂不支持的架构 ${cyan}$(dpkg --print-architecture)${background}
+	exit
+esac
+Update apt -y update
+function ChromiumInstall(){
+if ! dpkg -s gnupg > /dev/null 2>&1
+then
+  apt install -y gnupg
+fi
+if CheckNetwork
+then
+  SourcesListFile="/etc/apt/sources.list.d/xtradeb-ubuntu-apps-jammy.list"
+  SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ $1 main"
+  GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
+  GpgFileURL='https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880'
+  echo ${SourcesList} > ${SourcesListFile}
+  Download xtradeb-ubuntu-apps.gpg "${GpgFileURL}"
+  gpg --dearmor -o ${GpgFilePath} xtradeb-ubuntu-apps.gpg
+  apt -y update
+  apt install -y chromium
+  rm -rf xtradeb-ubuntu-apps.gpg
+else
+  if ! dpkg -s software-properties-common > /dev/null 2>&1
+  then
+    apt install -y software-properties-common
+  fi
+  until add-apt-repository ppa:xtradeb/apps
+  do
+    echo -e ${red}添加PPA仓库失败 3秒后重试${background}
+    sleep 3s
+  done
+  apt -y update
+  apt install -y chromium
+fi
+}
+if grep -q -i focal /etc/os-release
+then
+  if ! bash <(curl https://gitee.com/baihu433/chromium/raw/master/chromium.sh)
+  then
+    ErrorReturn
+  fi
+elif grep -q -i jammy /etc/os-release
+then
+  if ! ChromiumInstall jammy
+  then
+    ErrorReturn
+  fi
+elif grep -q -i noble /etc/os-release
+then
+  if ! ChromiumInstall noble
+  then
+    ErrorReturn
+  fi
+else
+  echo -e ${red}不受支持的发行版${background}
+  exit 1
+fi

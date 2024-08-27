@@ -1,0 +1,651 @@
+#!/bin/env bash
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+
+GithubMirror="https://mirror.ghproxy.com/"
+
+if [ -x /usr/local/NodeJS/bin/node ]
+then
+  if [ ! -d $HOME/.local/share/pnpm ];then
+        mkdir -p $HOME/.local/share/pnpm
+  fi
+  export PATH=$PATH:/usr/local/NodeJS/bin
+  export PATH=$PATH:/root/.local/share/pnpm
+  export PNPM_HOME=/root/.local/share/pnpm
+  export PUPPETEER_SKIP_DOWNLOAD=true
+fi
+
+if [ $HOME/AFHOME ]
+then
+  export PATH=$PATH:$HOME/AFHOME/AFYN/
+  export PATH=$PATH:$HOME/AFHOME/
+  export PATH=$PATH:$HOME/AFHOME/chrome-win/
+  export PATH=$PATH:/usr/local/NodeJS/bin/
+  export PATH=$PATH:/usr/local/Redis/
+fi
+
+function MenuTips(){
+  echo "当前时期 $(date +"%Y-%m-%d %H:%M") | 请选择操作"
+}
+
+function gitclone(){
+function ReturnBcak(){
+if [ $? == 0 ]
+then
+  return 0
+else
+  rm -rf $2
+fi
+}
+if echo $1 | grep -q gitee
+then
+  git clone --depth=1 $1 $2
+  ReturnBcak
+fi
+if CheckNetwork
+then
+  MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy")
+else
+  MirrorNum=("github")
+fi
+for i in ${MirrorNum[@]}
+do
+  case ${i} in
+  github)
+    git clone --depth=1 $1 $2
+    ReturnBcak
+    ;;
+  gitclone)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
+    git clone --depth=1 ${GitUrl} $2
+    ReturnBcak
+    ;;
+  kkgithub)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
+    git clone --depth=1 ${GitUrl} $2
+    ReturnBcak
+    ;;
+  gh)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
+    git clone --depth=1 ${GitUrl} $2
+    ReturnBcak
+    ;;
+  ghproxy)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
+    git clone --depth=1 ${GitUrl} $2
+    ReturnBcak
+    ;;
+  esac
+done
+}
+
+function Download(){
+file="$1"
+URL="$2"
+local i=0
+if wget --help | grep -q show-progress 
+then
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -q --show-progress -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((${i}+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+else
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until wget -O ${file} -c ${URL}
+  do
+    if [ ${i} == 3 ]
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    i=$((i+1))
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+fi
+}
+
+function MenuSize(){
+local HEIGHT=$(($(tput lines) - 10))
+local WIDTH=$(($(tput cols) - 10))
+local OPTION=$((${HEIGHT} - 8))
+if (( $HEIGHT <= 8 ));then
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕高度过低.${background}
+  exit
+fi
+if (( $WIDTH <= 0 ));then
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  exit
+fi
+echo ${HEIGHT} ${WIDTH} ${OPTION}
+}
+
+function MsgboxSize(){
+local HEIGHT=$(($(tput lines) - 30))
+local WIDTH=$(($(tput cols) - 10))
+if (( $HEIGHT <= 0 ));then
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕高度过低.${background}
+  exit
+fi
+if (( $WIDTH <= 0 ));then
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  exit
+fi
+echo ${HEIGHT} ${WIDTH}
+}
+
+Arch(){
+case `uname -m` in
+aarch64|arm64)
+	echo arm64
+	;;
+x86_64|x64|amd64)
+	echo x64
+	;;
+*)
+	echo -e ${red}暂不支持的架构 ${cyan}$(dpkg --print-architecture)${background}
+	until read
+	do
+	  echo -e ${red}暂不支持的架构 ${cyan}$(dpkg --print-architecture)${background}
+	done
+esac
+}
+
+function ErrorReturn(){
+echo -en "
+${white}————————————————————
+    脚本运行出现${red}错误$white,请及时${blue}截图${white},保存报错信息,
+    以与便开发者,${green}更好的${white}和${green}更快的${cyan}解决${white}问题.
+${white}————————————————————${background}"
+read
+}
+
+function SelectRegion(){
+echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${background}
+ ———————————————————
+ ${cyan}请问您的设备所在位置是? 
+    ${green}1${white}. 中国大陆 ${background}
+    ${green}2${white}. 其他位置 ${background}
+ ———————————————————
+ ${cyan}请输入数字 ${white}[1-2]:${background} "
+ read num
+ case ${num} in
+ 1)
+  return 0
+  ;;
+ 2)
+  return 1
+  ;;
+ *)
+  echo -e ${red}输入错误 ${yellow}将保持默认 ${purple}中国大陆${background}
+  return 0
+  ;;
+  esac
+}
+
+function CheckNetwork(){
+country=$(curl -sL ipinfo.io  | jq .country)
+if [ -n ${country} ]
+then
+  if echo ${country} | grep -q CN
+  then
+    return 0
+  else
+    return 1
+  fi
+else
+  if SelectRegion
+  then
+    return 0
+  else
+    return 1
+  fi
+fi
+}
+
+function Update(){
+if [ -z ${Update} ]
+then
+  Command=$@
+  ${Command}
+  Update=true
+fi
+}
+
+function TUISoftware(){
+if [ -x "$(command -v whiptail)" ];then
+  echo whiptail
+elif [ -x "$(command -v dialog)" ];then
+  echo dialog
+else
+  echo -e ${red}没有TUI软件${background}
+  exit 1
+fi
+}
+
+function Session(){
+  jq .SelectManageSession ../config.json | sed 's|"||g'
+}
+
+function StopBot(){
+CheckStatus $1 $2 $3
+case $? in
+1)
+  if ManageSession tmux stop $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+2)
+  if ManageSession screen stop $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+3)
+  if ManageSession pm2 stop $3
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+4)
+  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep $2 | awk '{print $1}')
+  kill -9 ${PID}
+  ;;
+esac
+}
+
+function RestartBot(){
+CheckStatus $1 $2 $3
+case $? in
+1)
+  if ManageSession tmux restart $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+2)
+  if ManageSession screen restart $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+3)
+  if ManageSession pm2 restart $3
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+4)
+  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep $2 | awk '{print $1}')
+  kill -9 ${PID}
+  START $1 $3
+  ;;
+esac
+}
+
+function LogBot(){
+CheckStatus $1 $2 $3
+case $? in
+1)
+  if ManageSession tmux log $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+2)
+  if ManageSession screen log $1
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+3)
+  if ManageSession pm2 log $3
+  then
+    return 0
+  else
+    return 1
+  fi
+  ;;
+4)
+  echo $1 [前台] 启动
+  return 1
+  ;;
+esac
+}
+
+function PsAll(){
+  ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep -q $1
+}
+
+function CheckStatus(){
+if tmux ls 2>&1 | grep -q $1
+then
+  return 1
+elif screen -ls 2>&1 | grep -q $1
+then
+  return 2
+elif pm2 list 2>&1 | sed '/stopped/d' | grep -q $3
+then
+  return 3
+elif PsAll $2
+then
+  return 4
+else
+  return 0
+fi
+}
+
+function StartType(){
+CheckStatus $1 $2 $3
+case $? in
+1)
+  $(TUISoftware) --title "AF-IdentifyType" \
+  --msgbox "$3 已在 [Tmux] 中启动" \
+  $(MsgboxSize)
+  return 1
+;;
+2)
+  $(TUISoftware) --title "AF-IdentifyType" \
+  --msgbox "$3 已在 [Screen] 中启动" \
+  $(MsgboxSize)
+  return 2
+;;
+3)
+  $(TUISoftware) --title "AF-IdentifyType" \
+  --msgbox "$3 已在 [Pm2] 中启动" \
+  $(MsgboxSize)
+  return 3
+;;
+4)
+  $(TUISoftware) --title "AF-IdentifyType" \
+  --msgbox "$3 已在 [前台] 中启动" \
+  $(MsgboxSize)
+  return 4
+;;
+esac
+}
+
+function ManageSession(){
+case $1 in
+tmux)
+  case $2 in
+    start)
+      if tmux new -s $3 -d "$4" > /dev/null
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    stop)
+      if tmux kill-session -t $3 > /dev/null
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    restart)
+      if tmux kill-session -t $3 && tmux new -s $3 -d "$4" > /dev/null
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    log)
+      if tmux attach -t $3 > /dev/null
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    list)
+      if tmux ls | grep -q $3
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+  esac
+;;
+screen)
+  case $2 in
+    start)
+      if screen -S $3 -d -m bash -c "$4"
+      then
+        return 0
+      else
+        return 1
+      fi
+      ;;
+    stop)
+      Session=$(screen -ls | grep $3 | awk '{print $1}')
+      if screen -X -S ${Session} quit
+      then
+        return 0
+      else
+        return 1
+      fi
+      ;;
+    restart)
+      Session=$(screen -ls | grep $3 | awk '{print $1}')
+      if screen -X -S ${Session} quit && screen -S ${Session} -d -m bash -c "$4"
+      then
+        return 0
+      else
+        return 1
+      fi
+      ;;
+    log)
+      Session=$(screen -ls | grep $3 | awk '{print $1}')
+      if screen -r ${Session}
+      then
+        return 0
+      else
+        return 1
+      fi
+      ;;
+    list)
+      if screen -ls | grep -q $3
+      then
+        return 0
+      esle
+        return 1
+      fi
+      ;;
+  esac
+;;
+pm2)
+  case $2 in
+    start)
+      if pm2 start --name $3 "$4"
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    stop)
+      if pm2 stop $3
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    restart)
+      if pm2 stop $3 && pm2 start --name $3 "$4"
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    log)
+      if pm2 logs $3 | sed '/PM2/d'
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+    list)
+      if pm2 list
+      then
+        return 0
+      else
+        return 1
+      fi
+    ;;
+  esac
+;;
+esac
+}
+
+function CheckRedisServer(){
+function PedisCliPing(){
+if [ "$(redis-cli ping 2>&1)" == "PONG" ]
+then
+  return 0
+else
+  return 1
+fi
+}
+if $(PedisCliPing)
+then
+  echo -e ${cyan} Redis-Server${yellow} 已经启动${background}
+else
+  echo -e ${cyan} Redis-Server${yellow} 正在启动${background}
+  $(nohup redis-server > /dev/null 2>&1 &)
+  until PedisCliPing
+  do
+    sleep 0.2s
+  done
+  echo -e ${cyan} Redis-Server${yellow} 启动成功${background}
+fi
+}
+
+function CheckSignApi(){
+  local file="config/config/bot.yaml"
+  SignApi=$(grep sign_api_addr ${file} | sed 's|sign_api_addr: ||g')
+  if [ -n ${SignApi} ]
+  then
+    echo -e ${yellow}正在检查签名可用性${background}
+    if curl -sL ${SignApi} | tee grep com.tencent.mobileqq
+    then
+      echo
+      echo -e ${green}签名可用${background}
+    else
+      echo
+      echo -e ${red}签名不可达${background}
+    fi
+  fi
+}
+
+function START(){
+  CheckRedisServer
+  CheckSignApi
+  local Command="$1"
+  ${Command}
+  if pm2 list 2>&1 | grep $2 | grep -q online
+  then
+    pm2 delete $2 > /dev/null 2>&1
+    START $1 $2
+  fi
+}
+
+function ProgressBar(){
+  {
+    i=0
+    until CheckStatus $1 $2 $3
+    do
+      echo $((i++))
+      if [ ${i} == 100 ]
+      then
+        return 1
+      fi
+    done
+    return 0
+  } | $(TUISoftware) --gauge "${BotName} [正在启动]" $(MsgboxSize)
+}
+
+function CheckPath(){
+  local Name=$@
+  for i in ${Name[@]}
+  do
+    if [ -d "$HOME/$1/node_modules" ]
+    then
+      cd "$HOME/$1"
+      return 0
+    fi
+  done
+  return 1
+}
+
+function CheckInstall(){
+  case $1 in
+  YN)
+    if CheckPath Yunzai-Next yunzaijs
+    then
+      return 0
+    else
+      return 1
+    fi
+    ;;
+  MZ)
+    if CheckPath Miao-Yunzai
+    then
+      return 0
+    else
+      return 1
+    fi
+    ;;
+  TZ)
+    if CheckPath TRSS-Yunzai Yunzai
+    then
+      return 0
+    else
+      return 1
+    fi
+    ;;
+  esac
+}

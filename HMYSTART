@@ -1,0 +1,31 @@
+#!/bin/env bash
+function Random(){
+echo $((RANDOM % 3))
+}
+
+case $(Random) in
+1)
+  if ! am start com.miHoYo.Yuanshen/com.miHoYo.GetMobileInfo.MainActivity
+  then
+    if ! am start -a com.miHoYo.cloudgames.ys/com.mihoyo.cloudgame.ui.SplashActivity
+    then
+      am start -a android.intent.action.VIEW -d "https://ys.mihoyo.com/cloud"
+    fi
+  fi
+  ;;
+2)
+  if ! am start com.miHoYo.hkrpg/com.mihoyo.combosdk.ComboSDKActivity
+  then
+    if ! am start com.miHoYo.cloudgames.hkrpg/com.mihoyo.cloudgame.ui.SplashActivity
+    then
+      am start -a android.intent.action.VIEW -d "https://sr.mihoyo.com/cloud"
+    fi
+  fi
+  ;;
+3)
+  if ! am start com.miHoYo.Nap/com.mihoyo.combosdk.ComboSDKActivity
+  then
+    am start -a android.intent.action.VIEW -d "https://zzz.mihoyo.com"
+  fi
+  ;;
+esac

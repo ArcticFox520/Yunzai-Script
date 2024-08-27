@@ -1,0 +1,43 @@
+#!/bin/env bash
+black="\e[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+purple="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+background="\033[0m"
+
+echo && echo -e "
+  ${cyan}Yunzai-Next ${purple}Script
+ ${white}————————————————————
+     ${blue}欢迎您的使用
+ ${white}————————————————————
+  ${green}请认真阅读用户协议${background}"
+echo -en "
+${purple}用户协议
+
+${white}Yunzai-Next Script 使用协议
+1.欢迎使用Yunzai-Next Script 项目（以下简称“本项目”）。在使用本项目之前，请仔细阅读并遵守本协议的所有条款和条件。使用本项目即表示您同意受到本协议的约束。
+2.使用/修改本项目即表示您同意遵守本协议中的所有条款和条件。如果您不同意本协议的任何部分，则不得使用本项目。
+3.本项目是纯免费开源的，不会对您进行任何下载/克隆收费，也不会对您使用任何内容收费。禁止以任何形式出售本项目的内容。如果您的项目中有收款方式，例如众筹平台[爱发电]，请勿调用本项目的内容。
+4.本项目允许您对您设备上已下载的本项目文件进行本地修改，以满足您的需求。但请勿在获得本项目作者(ArcticFox520)同意之前，在包括但不限于Gitee、GitHub、GitLab、OSChina等其他源代码交流平台，QQ、微信、Discord、Telegram等其他社交媒体平台，阿里云盘，百度网盘，123盘等网络存储平台，上传播修改后的版本。
+5.本项目的用户协议同样适用于本项目作者(ArcticFox520)提供的其他项目。
+6.本项目不承担任何由用户使用本项目所产生的直接或间接的责任。未经本项目作者(ArcticFox520)的明确授权，任何人不得将本项目用于商业目的。
+7.您可以在遵守本协议的前提下，自由地使用、修改本项目的内容。但您需要承担因您的使用、修改本项目内容而产生的任何问题和责任。
+8.如果您在使用本项目时遇到任何问题或需要帮助，请通过本项目作者(ArcticFox520)提供的联系方式与其取得联系。本项目作者(ArcticFox520)将尽力为您提供帮助和支持。
+9.本项目的用户协议可能会随时更新和修改。继续使用本项目，即表示您同意受到更新和修改后的协议的约束。
+10.对于本项目的最终所有权和解释权归本项目的唯一作者(ArcticFox520)（https://github.com/ArcticFox520）所有。
+最后，感谢您对 Yunzai-Next Script 项目的信任与支持!
+${white}————————————————————
+${white}如果您${blue}同意${white}此协议 请${purple}回车${white}继续。"
+read
+
+AF_HOME_Path="$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"
+chmod +x ${AF_HOME_Path}/afyn
+cp -f ${AF_HOME_Path}/afyn /usr/local/bin/afyn
+sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyn
+
+echo -e ${yellow} - ${yellow}安装成功${background}
+echo -e ${yellow} - ${cyan}请使用 ${green}afyn ${cyan}命令 打开脚本${background}
