@@ -36,7 +36,7 @@ read
 
 AF_HOME_Path="$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"
 chmod +x ${AF_HOME_Path}/afyz
-cp -f ${AF_HOME_Path}/afyn /usr/local/bin/afyz
+cp -f ${AF_HOME_Path}/afyz /usr/local/bin/afyz
 sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyz
 
 echo -e ${yellow} - ${yellow}安装成功${background}
