@@ -9,6 +9,8 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
+GithubMirror="https://mirrors.chenby.cn/"
+
 if [ -x /usr/local/NodeJS/bin/node ]
 then
   if [ ! -d $HOME/.local/share/pnpm ];then

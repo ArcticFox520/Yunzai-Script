@@ -40,4 +40,4 @@ cp -f ${AF_HOME_Path}/afyz /usr/local/bin/afyz
 sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyz
 
 echo -e ${yellow} - ${yellow}安装成功${background}
-echo -e ${yellow} - ${cyan}请使用 ${green}afyn ${cyan}命令 打开脚本${background}
+echo -e ${yellow} - ${cyan}请使用 ${green}afyz ${cyan}命令 打开脚本${background}
