@@ -228,7 +228,7 @@ then
   rm -rf $HOME/AFProotFile
 fi
 
-if gitclone https://github.com/ArcticFox520/Yunzai-Next-Script $HOME/AFProotFile
+if gitclone https://github.com/ArcticFox520/Yunzai-Script $HOME/AFProotFile
 then
   mv $HOME/AFProotFile/Proot/Install $HOME/AF-Proot/${Linux}-${Version}/root/Install
   mkdir $HOME/AF-Proot/proc/

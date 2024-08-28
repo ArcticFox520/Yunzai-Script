@@ -214,6 +214,8 @@ mkdir -p /root/.local/share/pnpm
 echo '
 #Node.JS
 export PATH=$PATH:/usr/local/NodeJS/bin
+export PATH=$PATH:/root/.local/share/pnpm
+export PNPM_HOME=/root/.local/share/pnpm
 ' >> /etc/profile
 
 echo -e ${green}NodeJS ${yellow}安装完成${background}
@@ -259,16 +261,16 @@ mv -f ffprobe /usr/local/bin/ffprobe
 echo -e ${green}安装完成${background}
 
 echo -e ${green}开始安装 ${yellow}ArcticFox Script${background}
-until gitclone https://github.com/ArcticFox520/Yunzai-Next-Script ./AFYN
+until gitclone https://github.com/ArcticFox520/Yunzai-Script ./AFYZ
 do
   echo -e ${red} - ${red}克隆错误 ${cyan}3秒后重试${background}
   sleep 3s
 done
 cd AFYN
-chmod +x afyn
+chmod +x afyz
 AF_HOME_Path="$(pwd)"
-sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" afyn
-mv -f afyn /usr/local/bin/afyn
+sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" afyz
+cp -f afyz /usr/local/bin/afyz
 echo -e ${yellow} - ${yellow}安装成功${background}
 
 cd $HOME

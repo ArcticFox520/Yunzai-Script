@@ -189,14 +189,14 @@ fi
 }
 
 function InstallScript(){
-if [ -d AFYN ]
+if [ -d AFYZ ]
 then
   cd AFYN
   git fetch --all
   git reset --hard main
   git pull
 else
-  if ! gitclone https://github.com/ArcticFox520/Yunzai-Script ./AFYN
+  if ! gitclone https://github.com/ArcticFox520/Yunzai-Script ./AFYZ
   then
     echo -e ${red} - ${yellow}出现错误${background}
     exit
