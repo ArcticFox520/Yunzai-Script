@@ -31,7 +31,14 @@
 ---
 
 ## 功能 Function
->
+---
+- Yunzai-Next 部署与管理
+- Miao-Yunzai 部署与管理
+- TRSS-Yunzai 部署与管理
+- Bot 账号修改
+- 主人 账号修改
+- device 信息写入
+- 签名URL 修改
 ---
 ## LICENSE
 - [MIT License](https://github.com/ArcticFox520/Yunzai-Next-Script/blob/main/LICENSE)
