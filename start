@@ -191,7 +191,7 @@ fi
 function InstallScript(){
 if [ -d AFYZ ]
 then
-  cd AFYN
+  cd AFYZ
   git fetch --all
   git reset --hard main
   git pull

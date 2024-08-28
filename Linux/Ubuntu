@@ -46,7 +46,12 @@ then
   GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
   GpgFileURL='https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880'
   echo ${SourcesList} > ${SourcesListFile}
-  Download xtradeb-ubuntu-apps.gpg "${GpgFileURL}"
+  KeyURLList=("keyserver.ubuntu.com" "pgp.mit.edu")
+  for KeyURL in ${KeyURLList}
+  do
+    GpgFileURL="https://${KeyURL}/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880"
+    Download xtradeb-ubuntu-apps.gpg ${GpgFileURL}
+  done
   gpg --dearmor -o ${GpgFilePath} xtradeb-ubuntu-apps.gpg
   apt -y update
   apt install -y chromium
@@ -56,7 +61,7 @@ else
   then
     apt install -y software-properties-common
   fi
-  until add-apt-repository ppa:xtradeb/apps
+  until echo -e '\n' | add-apt-repository ppa:xtradeb/apps
   do
     echo -e ${red}添加PPA仓库失败 3秒后重试${background}
     sleep 3s

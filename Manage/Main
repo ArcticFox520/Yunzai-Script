@@ -302,7 +302,7 @@ case ${Number} in
       Pm2Name="Miao-Yunzai"
       SecondMenu
     else
-      Install YN
+      Install MZ
       TitleText="AF-MZ"
       BotName="Miao-Yunzai"
       COMMAND="Miao-Yun"
@@ -321,7 +321,7 @@ case ${Number} in
       Pm2Name="TRSS-Yunzai"
       SecondMenu
     else
-      Install YN
+      Install TZ
       TitleText="AF-TZ"
       BotName="TRSS-Yunzai"
       COMMAND="TRSS Yunzai"
