@@ -35,9 +35,9 @@ ${white}如果您${blue}同意${white}此协议 请${purple}回车${white}继续
 read
 
 AF_HOME_Path="$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"
-chmod +x ${AF_HOME_Path}/afyn
-cp -f ${AF_HOME_Path}/afyn /usr/local/bin/afyn
-sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyn
+chmod +x ${AF_HOME_Path}/afyz
+cp -f ${AF_HOME_Path}/afyn /usr/local/bin/afyz
+sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyz
 
 echo -e ${yellow} - ${yellow}安装成功${background}
 echo -e ${yellow} - ${cyan}请使用 ${green}afyn ${cyan}命令 打开脚本${background}

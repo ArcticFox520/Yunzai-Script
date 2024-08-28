@@ -9,6 +9,20 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
+if [ ! "$(uname)" = "Linux" ];then
+    echo -e ${red}请使用linux!${background}
+    exit
+fi
+
+function Update(){
+if [ -z ${Update} ]
+then
+  Command=$@
+  ${Command}
+  Update=true
+fi
+}
+
 function SelectRegion(){
 echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${background}
  ———————————————————
@@ -32,18 +46,91 @@ echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${backgro
   esac
 }
 
-if [ ! "$(uname)" = "Linux" ];then
-    echo -e ${red}请使用linux!${background}
-    exit
-fi
-
-function Update(){
-if [ -z ${Update} ]
+function CheckNetwork(){
+country=$(curl -sL ipinfo.io  | jq .country)
+if [ -n ${country} ]
 then
-  Command=$@
-  ${Command}
-  Update=true
+  if echo ${country} | grep -q CN
+  then
+    return 0
+  else
+    return 1
+  fi
+else
+  if SelectRegion
+  then
+    return 0
+  else
+    return 1
+  fi
 fi
+}
+
+function gitclone(){
+if echo $1 | grep -q gitee
+then
+  git clone --depth=1 $1 $2
+  ReturnBcak
+fi
+if CheckNetwork
+then
+  MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy")
+else
+  MirrorNum=("github")
+fi
+for i in ${MirrorNum[@]}
+do
+  case ${i} in
+  github)
+    if git clone --depth=1 $1 $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gitclone)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  kkgithub)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gh)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  ghproxy)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  error)
+    echo -e ${yellow}仓库克隆 ${red}失败${background}
+    exit 1
+    ;;
+  esac
+done
 }
 
 function InstallPKG(){
@@ -101,26 +188,6 @@ then
 fi
 }
 
-function CheckNetwork(){
-country=$(curl -sL ipinfo.io  | jq .country)
-if [ -n ${country} ]
-then
-  if echo ${country} | grep -q CN
-  then
-    GitURL="https://gitee.com/baihu433/Yunzai-Next-Script"
-  else
-    GitURL="https://github.com/ArcticFox520/Yunzai-Next-Script"
-  fi
-else
-  if SelectRegion
-  then
-    GitURL="https://gitee.com/baihu433/Yunzai-Next-Script"
-  else
-    GitURL="https://github.com/ArcticFox520/Yunzai-Next-Script"
-  fi
-fi
-}
-
 function InstallScript(){
 if [ -d AFYN ]
 then
@@ -129,16 +196,16 @@ then
   git reset --hard main
   git pull
 else
-  if ! git clone --depth=1 -b main ${GitURL} ./AFYN
+  if ! gitclone https://github.com/ArcticFox520/Yunzai-Script ./AFYN
   then
     echo -e ${red} - ${yellow}出现错误${background}
     exit
   fi
-  cd AFYN
-  chmod +x afyn
+  cd AFYZ
+  chmod +x afyz
   AF_HOME_Path="$(pwd)"
-  cp -f afyz /usr/local/bin/afyn
-  sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyn
+  cp -f afyz /usr/local/bin/afyz
+  sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyz
 fi
 echo -e ${yellow} - ${yellow}安装成功${background}
 echo -e ${yellow} - ${cyan}请使用 ${green}afyn ${cyan}命令 打开脚本${background}
