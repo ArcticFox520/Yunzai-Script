@@ -40,6 +40,14 @@
 - device 信息写入
 - 签名URL 修改
 ---
+
+## 安装
+---
+> [文档](https://docs.arcticfox.top)
+- [备用文档①](https://netlify.docs.arcticfox.top)
+- [备用文档②](https://vercel.docs.arcticfox.top)
+- [备用文档③](https://cloudflare.docs.arcticfox.top)
+
 ## LICENSE
 - [MIT License](https://github.com/ArcticFox520/Yunzai-Next-Script/blob/main/LICENSE)
 -  [用户协议](https://github.com/ArcticFox520/Yunzai-Next-Script/blob/main/用户协议.txt)
