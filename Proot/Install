@@ -9,7 +9,67 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
-GithubMirror="https://mirrors.chenby.cn/"
+function gitclone(){
+if echo $1 | grep -q gitee
+then
+  git clone --depth=1 $1 $2
+  ReturnBcak
+fi
+MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy" "github" "error")
+for i in ${MirrorNum[@]}
+do
+  case ${i} in
+  github)
+    if git clone --depth=1 $1 $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gitclone)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  kkgithub)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gh)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  ghproxy)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  error)
+    echo -e ${yellow}仓库克隆 ${red}失败${background}
+    exit 1
+    ;;
+  esac
+done
+}
 
 function Download(){
 file="$1"
@@ -97,12 +157,12 @@ export LANG=zh_CN.UTF-8
 echo -e ${green}已修改为 ${yellow}中文${background}
 
 echo -e ${green}正在安装 ${yellow}依赖软件${background}
-apt install -y tar gzip xz-utils tmux screen curl wget pv git redis-server jq fonts-wqy*
+apt install -y tar gzip xz-utils tmux screen curl wget pv git redis-server jq fonts-wqy* gnupg
 echo -e ${green}安装完成${background}
 
 echo -e ${green}开始安装 ${yellow}Chromium${background}
 SourcesListFile="/etc/apt/sources.list.d/xtradeb-ubuntu-apps-jammy.list"
-SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ $1 main"
+SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ jammy main"
 GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
 GpgFileURL="https://pgp.mit.edu/pks/lookup?op=get&search=0x5301FA4FD93244FBC6F6149982BB6851C64F6880"
 echo ${SourcesList} > ${SourcesListFile}
@@ -169,24 +229,24 @@ echo -e ${green}已设置为 ${yellow}npmmirror${background}
 
 echo -e ${green}正在安装 ${yellow}YARN${background}
 npm install -g yarn
-echo -e ${green}正在设置PNPM ${yellow}默认仓库${background}
+echo -e ${green}正在设置YARN ${yellow}默认仓库${background}
 yarn config set registry ${NPMMirror}
 yarn config set registry ${NPMMirror}
 echo -e ${green}已设置为 ${yellow}npmmirror${background}
 
+echo -e ${green}正在安装 ${yellow}PNPM${background}
+npm install -g pnpm
+echo -e ${green}正在设置PNPM ${yellow}默认仓库${background}
+pnpm config set registry ${NPMMirror}
+pnpm config set registry ${NPMMirror}
+echo -e ${green}已设置为 ${yellow}npmmirror${background}
+
 echo -e ${green}正在安装 ${yellow}PNM2${background}
-until yarn install -g pm2
+until npm install -g pm2
 do
   echo -e ${cyan}安装失败 ${yellow}三秒后重试${background}
   sleep 3s
 done
-echo -e ${green}安装完成${background}
-
-echo -e ${green}正在安装 ${yellow}yq${background}
-URL="https://mirrors.chenby.cn/https://github.com/mikefarah/yq/releases/download/v4.44.2/yq_linux_arm64"
-Download yq ${URL}
-mv yq /usr/local/bin/yq
-chmod +x /usr/local/bin/yq
 echo -e ${green}安装完成${background}
 
 echo -e ${green}正在安装 ${yellow}ffmpeg${background}
@@ -199,7 +259,7 @@ mv -f ffprobe /usr/local/bin/ffprobe
 echo -e ${green}安装完成${background}
 
 echo -e ${green}开始安装 ${yellow}ArcticFox Script${background}
-until git clone --depth=1 https://mirrors.chenby.cn/https://github.com/ArcticFox520/Yunzai-Next-Script ./AFYN
+until gitclone https://github.com/ArcticFox520/Yunzai-Next-Script ./AFYN
 do
   echo -e ${red} - ${red}克隆错误 ${cyan}3秒后重试${background}
   sleep 3s
@@ -208,5 +268,8 @@ cd AFYN
 chmod +x afyn
 AF_HOME_Path="$(pwd)"
 sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" afyn
-mv -f afyz /usr/local/bin/afyn
+mv -f afyn /usr/local/bin/afyn
 echo -e ${yellow} - ${yellow}安装成功${background}
+
+cd $HOME
+rm -rf Install xtradeb-ubuntu-apps.gpg

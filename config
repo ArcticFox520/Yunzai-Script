@@ -9,8 +9,6 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
-GithubMirror="https://mirror.ghproxy.com/"
-
 if [ -x /usr/local/NodeJS/bin/node ]
 then
   if [ ! -d $HOME/.local/share/pnpm ];then
@@ -36,14 +34,6 @@ function MenuTips(){
 }
 
 function gitclone(){
-function ReturnBcak(){
-if [ $? == 0 ]
-then
-  return 0
-else
-  rm -rf $2
-fi
-}
 if echo $1 | grep -q gitee
 then
   git clone --depth=1 $1 $2
@@ -59,28 +49,52 @@ for i in ${MirrorNum[@]}
 do
   case ${i} in
   github)
-    git clone --depth=1 $1 $2
-    ReturnBcak
+    if git clone --depth=1 $1 $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
     ;;
   gitclone)
     GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
-    git clone --depth=1 ${GitUrl} $2
-    ReturnBcak
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
     ;;
   kkgithub)
     GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
-    git clone --depth=1 ${GitUrl} $2
-    ReturnBcak
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
     ;;
   gh)
     GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
-    git clone --depth=1 ${GitUrl} $2
-    ReturnBcak
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
     ;;
   ghproxy)
     GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
-    git clone --depth=1 ${GitUrl} $2
-    ReturnBcak
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  error)
+    echo -e ${yellow}仓库克隆 ${red}失败${background}
+    exit 1
     ;;
   esac
 done
@@ -125,29 +139,33 @@ fi
 }
 
 function MenuSize(){
-local HEIGHT=$(($(tput lines) - 10))
-local WIDTH=$(($(tput cols) - 10))
-local OPTION=$((${HEIGHT} - 8))
-if (( $HEIGHT <= 8 ));then
+local HEIGHT=$(($(tput lines) - 5))
+local WIDTH=$(($(tput cols) - 5))
+local OPTION=$((${HEIGHT} - 7))
+if (( $HEIGHT <= 3 ));then
   echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕高度过低.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
 if (( $WIDTH <= 0 ));then
   echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
 echo ${HEIGHT} ${WIDTH} ${OPTION}
 }
 
 function MsgboxSize(){
-local HEIGHT=$(($(tput lines) - 30))
-local WIDTH=$(($(tput cols) - 10))
+local HEIGHT=$(($(tput lines) - 15))
+local WIDTH=$(($(tput cols) - 5))
 if (( $HEIGHT <= 0 ));then
   echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕高度过低.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
 if (( $WIDTH <= 0 ));then
   echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
 echo ${HEIGHT} ${WIDTH}
@@ -243,7 +261,7 @@ fi
 }
 
 function Session(){
-  jq .SelectManageSession ../config.json | sed 's|"||g'
+  jq .SelectManageSession $AFHOME/config.json | sed 's|"||g'
 }
 
 function StopBot(){
@@ -552,15 +570,15 @@ fi
 }
 if $(PedisCliPing)
 then
-  echo -e ${cyan} Redis-Server${yellow} 已经启动${background}
+  echo -e ${cyan}Redis-Server${yellow} 已经启动${background}
 else
-  echo -e ${cyan} Redis-Server${yellow} 正在启动${background}
+  echo -e ${cyan}Redis-Server${yellow} 正在启动${background}
   $(nohup redis-server > /dev/null 2>&1 &)
   until PedisCliPing
   do
     sleep 0.2s
   done
-  echo -e ${cyan} Redis-Server${yellow} 启动成功${background}
+  echo -e ${cyan}Redis-Server${yellow} 启动成功${background}
 fi
 }
 
@@ -583,29 +601,32 @@ function CheckSignApi(){
 
 function START(){
   CheckRedisServer
-  CheckSignApi
   local Command="$1"
   ${Command}
-  if pm2 list 2>&1 | grep $2 | grep -q online
+  Pm2List=$(pm2 list 2>&1)
+  if echo ${Pm2List} | grep -q $2
   then
-    pm2 delete $2 > /dev/null 2>&1
-    START $1 $2
+    if pm2 list 2>&1 | grep $3 | grep -q online
+    then
+      pm2 delete $2 > /dev/null 2>&1
+      START $1 $2
+    fi
   fi
 }
 
 function ProgressBar(){
   {
     i=0
-    until CheckStatus $1 $2 $3
+    while CheckStatus $1 $2 $3
     do
       echo $((i++))
-      if [ ${i} == 100 ]
+      if echo ${i} | grep -q 100
       then
         return 1
       fi
     done
     return 0
-  } | $(TUISoftware) --gauge "${BotName} [正在启动]" $(MsgboxSize)
+  } | $(TUISoftware) --gauge "${BotName} [正在启动]" $(MsgboxSize) 0
 }
 
 function CheckPath(){
@@ -614,6 +635,7 @@ function CheckPath(){
   do
     if [ -d "$HOME/$1/node_modules" ]
     then
+      export BotPath="$HOME/$1"
       cd "$HOME/$1"
       return 0
     fi
@@ -623,7 +645,7 @@ function CheckPath(){
 
 function CheckInstall(){
   case $1 in
-  YN)
+  YN|Yunzai-Next)
     if CheckPath Yunzai-Next yunzaijs
     then
       return 0
@@ -631,7 +653,7 @@ function CheckInstall(){
       return 1
     fi
     ;;
-  MZ)
+  MZ|Miao-Yunzai)
     if CheckPath Miao-Yunzai
     then
       return 0
@@ -639,7 +661,7 @@ function CheckInstall(){
       return 1
     fi
     ;;
-  TZ)
+  TZ|TRSS-Yunzai)
     if CheckPath TRSS-Yunzai Yunzai
     then
       return 0

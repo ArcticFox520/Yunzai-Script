@@ -2,4 +2,8 @@
 export Path="$(pwd)"
 export AFHOME="AF_HOME_Path"
 cd ${AFHOME}/Manage
+if [ ! -z $1 ]
+then
+  bash $AFHOME/Manage/Command $@
+fi
 bash Main "$@"

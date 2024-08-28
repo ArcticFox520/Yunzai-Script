@@ -4,51 +4,9 @@ cd ${Path}
 if CheckNetwork
 then
   Git="gitee"
-  GitMirror="mirrors.chenby.cn/https://github"
 else
   Git="github"
-  GitMirror="github"
 fi
-function InstallMiaoPlugin(){
-  if [ ! -e plugins/miao-plugin/index.js ]
-  then
-    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/miao-plugin.git plugins/miao-plugin
-    then
-      echo -e ${red}安装失败${background}
-      exit 1
-    fi
-  fi
-}
-function InstallTRSSGenshin(){
-  if [ ! -e plugins/genshin/index.js ]
-  then
-    if ! git clone --depth=1 https://${git}.com/TimeRainStarSky/Yunzai-genshin.git plugins/genshin
-    then
-      echo -e ${red}安装失败${background}
-      exit 1
-    fi
-  fi
-}
-function InstallNextGenshin(){
-  if [ ! -e plugins/genshin/README.md ]
-  then
-    if ! git clone --depth=1 https://${GitMirror}.com/yunzai-org/genshin.git plugins/genshin
-    then
-      echo -e ${red}安装失败${background}
-      exit 1
-    fi
-  fi
-}
-function InstallNextSystem(){
-  if [ ! -e plugins/genshin/README.md ]
-  then
-    if ! git clone --depth=1 https://${GitMirror}.com/yunzai-org/system.git plugins/system
-    then
-      echo -e ${red}安装失败${background}
-      exit 1
-    fi
-  fi
-}
 function InstallMiaoYunzai(){
   if [ ! -e Miao-Yunzai/package.json ]
   then
@@ -72,7 +30,47 @@ function InstallTRSSYunzai(){
 function InstallYunzaiNext(){
   if [ ! -e Yunzai-Next/package.json ]
   then
-    if ! git clone --depth=1 https://${GitMirror}.com/yunzai-org/yunzai-next.git Yunzai-Next
+    if ! gitclone https://github.com/yunzai-org/yunzai-next.git Yunzai-Next
+    then
+      echo -e ${red}安装失败${background}
+      exit 1
+    fi
+  fi
+}
+function InstallMiaoPlugin(){
+  if [ ! -e plugins/miao-plugin/index.js ]
+  then
+    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/miao-plugin.git plugins/miao-plugin
+    then
+      echo -e ${red}安装失败${background}
+      exit 1
+    fi
+  fi
+}
+function InstallTRSSGenshin(){
+  if [ ! -e plugins/genshin/index.js ]
+  then
+    if ! git clone --depth=1 https://${Git}.com/TimeRainStarSky/Yunzai-genshin.git plugins/genshin
+    then
+      echo -e ${red}安装失败${background}
+      exit 1
+    fi
+  fi
+}
+function InstallNextGenshin(){
+  if [ ! -e plugins/genshin/README.md ]
+  then
+    if ! git clone --depth=1 https://github.com/yunzai-org/genshin.git plugins/genshin
+    then
+      echo -e ${red}安装失败${background}
+      exit 1
+    fi
+  fi
+}
+function InstallNextSystem(){
+  if [ ! -e plugins/genshin/README.md ]
+  then
+    if ! gitclone https://github.com/yunzai-org/system.git plugins/system
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -96,7 +94,7 @@ function PnpmPackage(){
 }
 function YarnPackage(){
   echo -e ${yellow}正在安装 ${green}依赖文件${background}
-  if ! echo Y | yarn install
+  if ! yarn
   then
     echo -e ${red}错误${background}
     exit 1
@@ -111,6 +109,10 @@ function YarnPackage(){
   echo -en ${green}完成${background}
   echo
 }
+function Device(){
+  cat ../Manage/device.js \
+  > node_modules/icqq/lib/core/device.js
+}
 #此处仅为传参所用，如果开发者不满意此缩写，可联系ArcticFox520更改。
 case $1 in
 MZ)
@@ -118,6 +120,7 @@ MZ)
   cd Miao-Yunzai
   InstallMiaoPlugin
   PnpmPackage
+  Device
 ;;
 TZ)
   InstallTRSSYunzai
@@ -125,6 +128,7 @@ TZ)
   InstallMiaoPlugin
   InstallTRSSGenshin
   PnpmPackage
+  Device
 ;;
 YN)
   InstallYunzaiNext
@@ -132,5 +136,6 @@ YN)
   InstallNextGenshin
   InstallMiaoPlugin
   YarnPackage
+  Device
 ;;
 esac

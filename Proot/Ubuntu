@@ -15,11 +15,84 @@ background="\033[0m"
 echo
 Linux="ubuntu"
 Version="jammy"
-GithubMirror="https://mirrors.chenby.cn/"
+
+function gitclone(){
+if echo $1 | grep -q gitee
+then
+  git clone --depth=1 $1 $2
+  ReturnBcak
+fi
+MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy" "github" "error")
+for i in ${MirrorNum[@]}
+do
+  case ${i} in
+  github)
+    if git clone --depth=1 $1 $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gitclone)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  kkgithub)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gh)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  ghproxy)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  error)
+    echo -e ${yellow}仓库克隆 ${red}失败${background}
+    exit 1
+    ;;
+  esac
+done
+}
 
 if [ ! "$(uname -o)" = "Android" ]
 then
 	echo -e ${blue}[${red}*${blue}] ${cyan}错误 ${yellow}此脚本仅能够在termux运行${background}
+fi
+
+if ! grep -q bfsu $PREFIX/etc/apt/sources.list
+then
+  echo '# The termux repository mirror from BFSU:
+deb https://mirrors.bfsu.edu.cn/termux/apt/termux-main stable main' \
+> $PREFIX/etc/apt/sources.list
+  apt -y update
+  yes Y | apt -y upgrade
+  echo '# The termux repository mirror from BFSU:
+deb https://mirrors.bfsu.edu.cn/termux/apt/termux-main stable main' \
+> $PREFIX/etc/apt/sources.list
 fi
 
 case `dpkg --print-architecture` in
@@ -155,10 +228,10 @@ then
   rm -rf $HOME/AFProotFile
 fi
 
-if git clone --depth=1 ${GithubMirror}https://github.com/ArcticFox520/ $HOME/AFProotFile
+if gitclone https://github.com/ArcticFox520/Yunzai-Next-Script $HOME/AFProotFile
 then
   mv $HOME/AFProotFile/Proot/Install $HOME/AF-Proot/${Linux}-${Version}/root/Install
-  mkdir /data/data/com.termux/files/home/AF-Proot/proc/
+  mkdir $HOME/AF-Proot/proc/
   mv -f $HOME/AFProotFile/Proot/proc/* $HOME/AF-Proot/proc/
   mv -f $HOME/AFProotFile/Proot/.hushlogin $HOME/AF-Proot/.hushlogin
   rm -rf $HOME/AFProotFile
@@ -168,9 +241,12 @@ else
 fi
 # 创建启动脚本
 start=start-${Linux}-${Version}.sh
-rm $HOME/.bashrc
+if [ -e $HOME/.bashrc ]
+then
+  rm $HOME/.bashrc
+fi
 touch $HOME/.bashrc
-echo "exec $HOME/AF-Proot/start-${Linux}-${Version}.sh 'afyz'" > $HOME/.bashrc
+echo "exec $HOME/AF-Proot/start-${Linux}-${Version}.sh 'afyn'" > $HOME/.bashrc
 cat > $start <<- FOX
 #!/bin/bash
 echo -e "${blue}[${yellow}*${blue}] ${cyan}正在启动 ${Linux}-${Version}${background}"
@@ -236,3 +312,4 @@ chmod +x "$HOME/AF-Proot/start-${Linux}-${Version}.sh"
 neofetch --ascii_distro ${Linux}
 $HOME/AF-Proot/start-ubuntu-jammy.sh 'bash Install'
 exec $HOME/AF-Proot/start-ubuntu-jammy.sh 'afyn'
+$HOME/AF-Proot/start-ubuntu-jammy.sh

@@ -1,0 +1,40 @@
+#!/bin/env bash
+if [ -e $AFHOME/config ]
+then
+  source $AFHOME/config
+fi
+CheckInstall $1
+case $1 in
+YN|Yunzai-Next)
+  BotName="Yunzai-Next"
+  COMMAND="YZ-NEXT"
+  StartCommand="node src/main"
+  Pm2Name="yunzai-next"
+  ;;
+MZ|Miao-Yunzai)
+  BotName="Miao-Yunzai"
+  COMMAND="Miao-Yun"
+  StartCommand="node app"
+  Pm2Name="Miao-Yunzai"
+  ;;
+TZ|TRSS-Yunzai)
+  BotName="TRSS-Yunzai"
+  COMMAND="TRSS Yunzai"
+  StartCommand="node app"
+  Pm2Name="TRSS-Yunzai"
+  ;;
+esac
+case $2 in
+start)
+  START "${StartCommand}" ${Pm2Name}
+  ;;
+stop)
+  StopBot ${BotName} ${COMMAND} ${Pm2Name}
+  ;;
+restart)
+  RestartBot ${BotName} ${COMMAND} ${Pm2Name}
+  ;;
+log)
+  LogBot ${BotName} ${COMMAND} ${Pm2Name}
+  ;;
+esac

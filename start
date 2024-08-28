@@ -9,8 +9,6 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
-Ghproxy="https://mirror.ghproxy.com/"
-
 function SelectRegion(){
 echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${background}
  ———————————————————
@@ -109,14 +107,14 @@ if [ -n ${country} ]
 then
   if echo ${country} | grep -q CN
   then
-    GitURL="${Ghproxy}https://github.com/ArcticFox520/Yunzai-Script"
+    GitURL="https://gitee.com/baihu433/Yunzai-Next-Script"
   else
-    GitURL="https://github.com/ArcticFox520/Yunzai-Script"
+    GitURL="https://github.com/ArcticFox520/Yunzai-Next-Script"
   fi
 else
   if SelectRegion
   then
-    GitURL="${Ghproxy}https://github.com/ArcticFox520/Yunzai-Script"
+    GitURL="https://gitee.com/baihu433/Yunzai-Next-Script"
   else
     GitURL="https://github.com/ArcticFox520/Yunzai-Next-Script"
   fi
@@ -137,10 +135,10 @@ else
     exit
   fi
   cd AFYN
-  chmod +x afyz
+  chmod +x afyn
   AF_HOME_Path="$(pwd)"
-  cp -f afyz /usr/local/bin/afyz
-  sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyz
+  cp -f afyz /usr/local/bin/afyn
+  sed -i "s|AF_HOME_Path|${AF_HOME_Path}|g" /usr/local/bin/afyn
 fi
 echo -e ${yellow} - ${yellow}安装成功${background}
 echo -e ${yellow} - ${cyan}请使用 ${green}afyn ${cyan}命令 打开脚本${background}
