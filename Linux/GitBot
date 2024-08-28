@@ -60,7 +60,7 @@ function InstallTRSSGenshin(){
 function InstallNextGenshin(){
   if [ ! -e plugins/genshin/README.md ]
   then
-    if ! git clone --depth=1 https://github.com/yunzai-org/genshin.git plugins/genshin
+    if ! gitclone https://github.com/yunzai-org/genshin.git plugins/genshin
     then
       echo -e ${red}安装失败${background}
       exit 1
