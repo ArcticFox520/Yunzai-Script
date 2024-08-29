@@ -24,6 +24,7 @@ TZ|TRSS-Yunzai)
   Pm2Name="TRSS-Yunzai"
   ;;
 up)
+  echo -e ${yellow} - ${cyan}开始更新${background}
   cd $AFHOME
   if CheckNetwork
   then
@@ -37,7 +38,13 @@ up)
   fi
   git fetch ${remote}
   git reset --hard ${remote}/main
-  git pull ${remote} main --force
+  if git pull ${remote} main --force
+  then
+    echo -e ${yellow} - ${cyan}更新成功${background}
+    echo -e ${yellow} - ${cyan}请使用 ${green}afyz ${cyan}命令 打开脚本${background}
+  else
+    echo -e ${red}更新失败${background}
+  fi
   ;;
 esac
 case $2 in
