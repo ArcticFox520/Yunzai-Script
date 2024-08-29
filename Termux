@@ -41,7 +41,6 @@ apt install -y chromium
 if CheckNetwork
 then
   NPMMirror="https://registry.npmmirror.com"
-  
 else
   NPMMirror="https://registry.npmjs.org"
 fi

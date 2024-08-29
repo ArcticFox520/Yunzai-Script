@@ -260,7 +260,7 @@ esac
 }
 function MainMenu(){
 Number=$($(TUISoftware) \
---title "AF-Shell" \
+--title "AF-Script" \
 --menu "$(MenuTips)" \
 $(MenuSize) \
 "1" "Yunzai-Next" \
@@ -283,13 +283,23 @@ case ${Number} in
       Pm2Name="yunzai-next"
       SecondMenu
     else
-      Install YN
-      TitleText="AF-YZ-Next"
-      BotName="Yunzai-Next"
-      COMMAND="YZ-NEXT"
-      StartCommand="node src/main"
-      Pm2Name="yunzai-next"
-      SecondMenu
+      if ($(TUISoftware) --title "AF-Script"  \
+      --yes-button "安装" \
+      --no-button "返回" \
+      --yesno "Yunzai-Next [未安装]\n是否立刻开始安装" \
+      $(MsgboxSize) \
+      3>&1 1>&2 2>&3)
+      then
+        Install YN
+        TitleText="AF-YZ-Next"
+        BotName="Yunzai-Next"
+        COMMAND="YZ-NEXT"
+        StartCommand="node src/main"
+        Pm2Name="yunzai-next"
+        SecondMenu
+      else
+        MainMenu
+      fi
     fi
     ;;
   2)
@@ -302,13 +312,23 @@ case ${Number} in
       Pm2Name="Miao-Yunzai"
       SecondMenu
     else
-      Install MZ
-      TitleText="AF-MZ"
-      BotName="Miao-Yunzai"
-      COMMAND="Miao-Yun"
-      StartCommand="node app"
-      Pm2Name="Miao-Yunzai"
-      SecondMenu
+      if ($(TUISoftware) --title "AF-Script"  \
+      --yes-button "安装" \
+      --no-button "返回" \
+      --yesno "Miao-Yunzai [未安装]\n是否立刻开始安装" \
+      $(MsgboxSize) \
+      3>&1 1>&2 2>&3)
+      then
+        Install MZ
+        TitleText="AF-MZ"
+        BotName="Miao-Yunzai"
+        COMMAND="Miao-Yun"
+        StartCommand="node app"
+        Pm2Name="Miao-Yunzai"
+        SecondMenu
+      else
+        MainMenu
+      fi
     fi
   ;;
   3)
@@ -321,13 +341,23 @@ case ${Number} in
       Pm2Name="TRSS-Yunzai"
       SecondMenu
     else
-      Install TZ
-      TitleText="AF-TZ"
-      BotName="TRSS-Yunzai"
-      COMMAND="TRSS Yunzai"
-      StartCommand="node app"
-      Pm2Name="TRSS-Yunzai"
-      SecondMenu
+      if ($(TUISoftware) --title "AF-Script"  \
+      --yes-button "安装" \
+      --no-button "返回" \
+      --yesno "Yunzai-TRSS [未安装]\n是否立刻开始安装" \
+      $(MsgboxSize) \
+      3>&1 1>&2 2>&3)
+      then
+        Install TZ
+        TitleText="AF-TZ"
+        BotName="TRSS-Yunzai"
+        COMMAND="TRSS Yunzai"
+        StartCommand="node app"
+        Pm2Name="TRSS-Yunzai"
+        SecondMenu
+      else
+        MainMenu
+      fi
     fi
   ;;
   0)
@@ -335,7 +365,6 @@ case ${Number} in
   ;;
 esac
 }
-
 function WhileMainMenu(){
   while true
   do
