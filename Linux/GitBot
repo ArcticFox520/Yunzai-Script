@@ -112,6 +112,19 @@ function YarnPackage(){
 function Device(){
   cat $AFHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
 }
+function defineConfig(){
+echo '{
+  "defineConfig": {
+    "applications": [
+      "yz-system"
+    ],
+    "middlewares": [
+      "yunzai-mys/runtime",
+      "yunzai-mys/message"
+    ]
+  }
+}' > yunzai.config.json
+}
 #此处仅为传参所用，如果开发者不满意此缩写，可联系ArcticFox520更改。
 case $1 in
 YN)
@@ -123,12 +136,11 @@ YN)
   cd yunzai
   yarn add  react-puppeteer -W
   yarn installl
+  Device
   cd ..
   YarnPackage
   Device
-  cd cd yunzai
-  Device
-  cd ..
+  defineConfig
 ;;
 MZ)
   InstallMiaoYunzai

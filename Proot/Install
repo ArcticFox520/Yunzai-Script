@@ -134,7 +134,7 @@ apt -y upgrade
 if ! grep -q 'https' /etc/apt/sources.list
 then
   # 启用https
-  echo -e ${white}正在将${green}http源替换为${purple}https源${background}
+  echo -e ${white}正在将${green}http源${white}替换为${purple}https源${background}
   sed -i "s|http|https|g" /etc/apt/sources.list
   apt -y update
 fi
