@@ -1,5 +1,4 @@
 #!/bin/env bash
-#
 # 此脚本欢迎各位脚本作者借鉴,但请勿删除作者标识
 # 此脚本作者 ArcticFox Q群 705226976
 cd $HOME
@@ -20,7 +19,6 @@ function gitclone(){
 if echo $1 | grep -q gitee
 then
   git clone --depth=1 $1 $2
-  ReturnBcak
 fi
 MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy" "github" "error")
 for i in ${MirrorNum[@]}

@@ -12,8 +12,7 @@ background="\033[0m"
 function gitclone(){
 if echo $1 | grep -q gitee
 then
-  git clone --depth=1 $1 $2
-  ReturnBcak
+  git clone --depth=1 $1 $2  
 fi
 MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy" "github" "error")
 for i in ${MirrorNum[@]}

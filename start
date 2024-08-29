@@ -24,7 +24,7 @@ fi
 }
 
 function SelectRegion(){
-echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${background}
+echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
  ———————————————————
  ${cyan}请问您的设备所在位置是? 
     ${green}1${white}. 中国大陆 ${background}
