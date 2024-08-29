@@ -118,8 +118,8 @@ nameserver 2400:3200:baba::1' > /etc/resolv.conf
 cat /etc/resolv.conf
 echo -e ${green}已修改为 ${yellow}阿里DNS${background}
 
-OldSourcesURL="ports.ubuntu.com/ubuntu-ports"
-NewSourcesURL="mirrors.bfsu.edu.cn/ubuntu"
+OldSourcesURL="ports.ubuntu.com"
+NewSourcesURL="mirrors.bfsu.edu.cn"
 
 echo -e 执行系统优化步骤
 # 更换源
