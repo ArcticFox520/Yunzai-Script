@@ -30,7 +30,7 @@ up)
   then
     if ! grep -q ghproxy .git/config
     then
-      git remote add gitclone https://mirror.ghproxy.com/https://github.com/ArcticFox520/Yunzai-Script.git
+      git remote add ghproxy https://mirror.ghproxy.com/https://github.com/ArcticFox520/Yunzai-Script.git
     fi
     remote=ghproxy
   else
