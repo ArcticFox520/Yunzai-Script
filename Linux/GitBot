@@ -110,7 +110,7 @@ function YarnPackage(){
   echo
 }
 function Device(){
-  cat device.js > node_modules/icqq/lib/core/device.js
+  cat $AFHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
 }
 #此处仅为传参所用，如果开发者不满意此缩写，可联系ArcticFox520更改。
 case $1 in
@@ -126,6 +126,9 @@ YN)
   cd ..
   YarnPackage
   Device
+  cd cd yunzai
+  Device
+  cd ..
 ;;
 MZ)
   InstallMiaoYunzai
