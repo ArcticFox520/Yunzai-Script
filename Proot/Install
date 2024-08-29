@@ -164,9 +164,7 @@ echo -e ${green}开始安装 ${yellow}Chromium${background}
 SourcesListFile="/etc/apt/sources.list.d/xtradeb-ubuntu-apps-jammy.list"
 SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ jammy main"
 GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
-GpgFileURL="https://pgp.mit.edu/pks/lookup?op=get&search=0x5301FA4FD93244FBC6F6149982BB6851C64F6880"
-
-KeyURLList=("keyserver.ubuntu.com" "pgp.mit.edu")
+KeyURLList=("keyserver.arcticfox.top" "keyserver.ubuntu.com" "pgp.mit.edu")
 for KeyURL in ${KeyURLList}
 do
   GpgFileURL="https://${KeyURL}/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880"

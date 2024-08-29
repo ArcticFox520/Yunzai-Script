@@ -224,7 +224,7 @@ echo && echo -en " ${cyan}Yunzai-Next ${purple}一键安装管理脚本${backgro
 
 function CheckNetwork(){
 country=$(curl -sL ipinfo.io  | jq .country)
-if [ -n ${country} ]
+if [ ! -z ${country} ]
 then
   if echo ${country} | grep -q CN
   then

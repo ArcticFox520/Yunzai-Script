@@ -23,6 +23,22 @@ TZ|TRSS-Yunzai)
   StartCommand="node app"
   Pm2Name="TRSS-Yunzai"
   ;;
+up)
+  cd $AFHOME
+  if CheckNetwork
+  then
+    if ! grep -q gitclone .git/config
+    then
+      git remote add gitclone https://gitclone.com/github.com/ArcticFox520/Yunzai-Script.git
+      remote=gitclone
+    fi
+  else
+    remote=origin
+  fi
+  git fetch ${remote}
+  git reset --hard ${remote}/main
+  git pull ${remote} main --force
+  ;;
 esac
 case $2 in
 start)

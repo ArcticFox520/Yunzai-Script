@@ -44,9 +44,8 @@ then
   SourcesListFile="/etc/apt/sources.list.d/xtradeb-ubuntu-apps-jammy.list"
   SourcesList="deb https://launchpad.proxy.ustclug.org/xtradeb/apps/ubuntu/ $1 main"
   GpgFilePath="/etc/apt/trusted.gpg.d/xtradeb-ubuntu-apps.gpg"
-  GpgFileURL='https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880'
   echo ${SourcesList} > ${SourcesListFile}
-  KeyURLList=("keyserver.ubuntu.com" "pgp.mit.edu")
+  KeyURLList=("keyserver.arcticfox.top" "keyserver.ubuntu.com" "pgp.mit.edu")
   for KeyURL in ${KeyURLList}
   do
     GpgFileURL="https://${KeyURL}/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880"
