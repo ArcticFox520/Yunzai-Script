@@ -635,10 +635,10 @@ function CheckPath(){
   local Name=$@
   for i in ${Name[@]}
   do
-    if [ -d "$HOME/$1/node_modules" ]
+    if [ -d "$HOME/${i}/node_modules" ]
     then
-      export BotPath="$HOME/$1"
-      cd "$HOME/$1"
+      export BotPath="$HOME/${i}"
+      cd "$HOME/${i}"
       return 0
     fi
   done
