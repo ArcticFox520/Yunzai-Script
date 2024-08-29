@@ -20,7 +20,7 @@ if echo $1 | grep -q gitee
 then
   git clone --depth=1 $1 $2
 fi
-MirrorNum=("kkgithub" "gh" "ghproxy" "github" "error")
+MirrorNum=("gh" "ghproxy" "kkgithub" "github" "error")
 for i in ${MirrorNum[@]}
 do
   case ${i} in
