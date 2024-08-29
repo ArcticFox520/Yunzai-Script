@@ -74,7 +74,7 @@ then
 fi
 if CheckNetwork
 then
-  MirrorNum=("gitclone" "kkgithub" "gh" "ghproxy")
+  MirrorNum=("kkgithub" "gh" "ghproxy")
 else
   MirrorNum=("github")
 fi

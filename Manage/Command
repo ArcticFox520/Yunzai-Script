@@ -27,9 +27,9 @@ up)
   cd $AFHOME
   if CheckNetwork
   then
-    if ! grep -q gitclone .git/config
+    if ! grep -q ghproxy .git/config
     then
-      git remote add gitclone https://gitclone.com/github.com/ArcticFox520/Yunzai-Script.git
+      git remote add gitclone https://mirror.ghproxy.com/https://github.com/ArcticFox520/Yunzai-Script.git
     fi
     remote=gitclone
   else
