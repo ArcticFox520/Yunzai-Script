@@ -22,15 +22,6 @@ then
   export PUPPETEER_SKIP_DOWNLOAD=true
 fi
 
-if [ $HOME/AFHOME ]
-then
-  export PATH=$PATH:$HOME/AFHOME/AFYZ/
-  export PATH=$PATH:$HOME/AFHOME/
-  export PATH=$PATH:$HOME/AFHOME/chrome-win/
-  export PATH=$PATH:/usr/local/NodeJS/bin/
-  export PATH=$PATH:/usr/local/Redis/
-fi
-
 function MenuTips(){
   echo "当前时期 $(date +"%Y-%m-%d %H:%M") | 请选择操作"
 }
@@ -263,7 +254,7 @@ fi
 }
 
 function Session(){
-  jq .SelectManageSession $AFHOME/config.json | sed 's|"||g'
+  jq .SelectManageSession $AFYZHOME/config.json | sed 's|"||g'
 }
 
 function StopBot(){

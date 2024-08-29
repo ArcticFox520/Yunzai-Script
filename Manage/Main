@@ -148,15 +148,15 @@ case ${Number} in
 6)
   case $(jq .name package.json) in
   "yunzai-next")
-    bash ${AFHOME}/Manage/YN-Plugin
+    bash $AFYZHOME/Manage/YN-Plugin
     SecondMenu
     ;;
   "miao-yunzai")
-    bash ${AFHOME}/Manage/Plugin
+    bash $AFYZHOME/Manage/Plugin
     SecondMenu
     ;;
   "trss-yunzai")
-    bash ${AFHOME}/Manage/Plugin
+    bash ${AFYZHOME}/Manage/Plugin
     SecondMenu
     ;;
   esac
@@ -187,15 +187,15 @@ case ${Number} in
 8)
   case $(jq .name package.json) in
   "yunzai-next")
-    bash ${AFHOME}/Manage/Function ${TitleText}
+    bash $AFYZHOME/Manage/Function ${TitleText}
     SecondMenu
     ;;
   "miao-yunzai")
-    bash ${AFHOME}/Manage/Function ${TitleText}
+    bash $AFYZHOME/Manage/Function ${TitleText}
     SecondMenu
     ;;
   "trss-yunzai")
-    bash ${AFHOME}/Manage/Function ${TitleText}
+    bash $AFYZHOME/Manage/Function ${TitleText}
     SecondMenu
     ;;
   esac

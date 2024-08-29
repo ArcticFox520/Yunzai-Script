@@ -110,7 +110,7 @@ function YarnPackage(){
   echo
 }
 function Device(){
-  cat $AFHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
+  cat $AFYZHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
 }
 function defineConfig(){
 echo '{

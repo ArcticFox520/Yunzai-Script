@@ -1,5 +1,5 @@
 #!/bin/env bash
-source ${AFHOME}/config
+source $AFYZHOME/config
 TitleText=$1
 function CheckFile(){
 if [ ! -e $1 ]

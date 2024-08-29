@@ -1,10 +1,10 @@
 #!/bin/env bash
 export Path="$(pwd)"
-export AFHOME="AF_HOME_Path"
-cd ${AFHOME}/Manage
+export AFYZHOME="AF_HOME_Path"
+cd $AFYZHOME/Manage
 if [ ! -z $1 ]
 then
-  bash $AFHOME/Manage/Command $@
+  bash $AFYZHOME/Manage/Command $@
   exit
 fi
 bash Main "$@"
