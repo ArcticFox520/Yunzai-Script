@@ -30,8 +30,8 @@ up)
     if ! grep -q gitclone .git/config
     then
       git remote add gitclone https://gitclone.com/github.com/ArcticFox520/Yunzai-Script.git
-      remote=gitclone
     fi
+    remote=gitclone
   else
     remote=origin
   fi
