@@ -94,7 +94,7 @@ function PnpmPackage(){
 }
 function YarnPackage(){
   echo -e ${yellow}正在安装 ${green}依赖文件${background}
-  if ! yarn installl
+  if ! yarn install
   then
     echo -e ${red}错误${background}
     exit 1
@@ -135,7 +135,7 @@ YN)
   InstallMiaoPlugin
   cd yunzai
   yarn add  react-puppeteer -W
-  yarn installl
+  yarn install
   Device
   cd ..
   YarnPackage

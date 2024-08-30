@@ -146,20 +146,8 @@ case ${Number} in
   fi
 ;;
 6)
-  case $(jq .name package.json) in
-  "yunzai-next")
-    bash $AFYZHOME/Manage/YN-Plugin
-    SecondMenu
-    ;;
-  "miao-yunzai")
-    bash $AFYZHOME/Manage/Plugin
-    SecondMenu
-    ;;
-  "trss-yunzai")
-    bash ${AFYZHOME}/Manage/Plugin
-    SecondMenu
-    ;;
-  esac
+  bash $AFYZHOME/Manage/Plugin ${TitleText}
+  SecondMenu
 ;;
 7)
   echo -e ${yellow}正在更新 ${yellow}${BotName}${background}
@@ -185,20 +173,8 @@ case ${Number} in
   done
 ;;
 8)
-  case $(jq .name package.json) in
-  "yunzai-next")
-    bash $AFYZHOME/Manage/Function ${TitleText}
-    SecondMenu
-    ;;
-  "miao-yunzai")
-    bash $AFYZHOME/Manage/Function ${TitleText}
-    SecondMenu
-    ;;
-  "trss-yunzai")
-    bash $AFYZHOME/Manage/Function ${TitleText}
-    SecondMenu
-    ;;
-  esac
+  bash $AFYZHOME/Manage/Function ${TitleText}
+  SecondMenu
 ;;
 9)
   exec bash

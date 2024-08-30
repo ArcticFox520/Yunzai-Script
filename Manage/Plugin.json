@@ -1,0 +1,300 @@
+{
+  "help-plugin": {
+    "Author": "饺子",
+    "Introduction": "提供美化帮助菜单，支持DIY，可一键同步喵喵帮助",
+    "Repository": {
+      "Gitee": "https://gitee.com/tu-zhengxiong0925/help-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "ark-plugin": {
+    "Author": "NotIvny",
+    "Introduction": "为喵喵插件提供总排名与排名统计，不再局限于群排名的插件，兼容梁氏",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/NotIvny/ark-plugin"
+    },
+    "PackageName": ""
+  },
+  "yuki-plugin": {
+    "Author": "snowtafir",
+    "Introduction": "一个适用于 Yunzai (Miao/Trss/Next) 系列机器人框架 的B站动态和微博动态订阅推送插件",
+    "Repository": {
+      "Gitee": "https://gitee.com/snowtafir/yuki-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "luoluo-Plugin": {
+    "Author": "叶落落",
+    "Introduction": "娱乐性插件 提供随机动漫图 哔哩哔哩视频解析 Ping等功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/yll0614/luoluo-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "Esca-Plugin": {
+    "Author": "逸燧",
+    "Introduction": "娱乐性插件，提供随机图/视频，备案查询，语音合成等功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/escaped-spark/esca-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "MEMZ-Plugin": {
+    "Author": "MEMZ",
+    "Introduction": "工具类插件,提供了一些便携的工具",
+    "Repository": {
+      "Gitee": "https://gitee.com/memzjs/memz-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "better-rc": {
+    "Author": "Vremq_vperyod",
+    "Introduction": "交互式远程命令执行与定时任务",
+    "Repository": {
+      "Gitee": "https://gitee.com/Vremq_vperyod/better-rc",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "Olympic-plugin": {
+    "Author": "小米饭",
+    "Introduction": "提供有关巴黎奥运会的一些查询功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/xiaomifan233/olympic-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "DF-Plugin": {
+    "Author": "等风来",
+    "Introduction": "提供了用户联系主人、Git仓库更新推送到群聊、随机表情包戳一戳、随机图片、图片自动添加外显等功能，推荐使用锅巴插件进行配置。",
+    "Repository": {
+      "Gitee": "https://gitee.com/DenFengLai/DF-Plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "dg-play-plugin": {
+    "Author": "Admilk",
+    "Introduction": "一种控制插件，正常人一般用不上",
+    "Repository": {
+      "Gitee": "https://gitee.com/adrae/dg-lab-play-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "AIR-plugin": {
+    "Author": "冷曦, TS沂沨",
+    "Introduction": "主要适配官方机器人，提供伊蕾娜图片，智能体聊天，全局转ark等功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/lengxihddj/",
+      "Github": "https://github.com/lengxi-root/air-plugin"
+    },
+    "PackageName": ""
+  },
+  "miaoyu-plugin": {
+    "Author": "小狐狸空空酱",
+    "Introduction": "提供云崽的b站抖音查询功能需要搭配Miaoyuapi本地版使用",
+    "Repository": {
+      "Gitee": "https://gitee.com/kongkongjiang/miaoyu-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "egg-plugin": {
+    "Author": "Fantasy",
+    "Introduction": "一键换头插件(一键地球，一键@，一键...未来会支持更多快捷一键换头，方便制作表情包)",
+    "Repository": {
+      "Gitee": "https://gitee.com/fantasy-hx/egg-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "bililivePush-plugin": {
+    "Author": "天如",
+    "Introduction": "简洁易用的b站直播推送插件，代码结构简洁",
+    "Repository": {
+      "Gitee": "https://gitee.com/HDTianRu/bililivePush-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "xmz-plugin": {
+    "Author": "最好喝的小米粥",
+    "Introduction": "一个插件，连帮助都没有",
+    "Repository": {
+      "Gitee": "https://gitee.com/cunyx/xmz-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "imgS-plugin": {
+    "Author": "二枣子, 0卡苏打水",
+    "Introduction": "能以图搜插画、搜动漫角色、搜番剧、搜Coser、搜本子的聚合以图搜图插件",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/erzaozi/imgS-plugin"
+    },
+    "PackageName": ""
+  },
+  "sunoai-plugin": {
+    "Author": "二枣子, 0卡苏打水",
+    "Introduction": "一个AI作曲插件，使用 SunoAI 接口，实现在QQ内使用 SunoAI V3 生成音乐",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/erzaozi/sunoai-plugin"
+    },
+    "PackageName": ""
+  },
+  "vits-plugin": {
+    "Author": "二枣子, 0卡苏打水",
+    "Introduction": "在线VITS插件，免部署，使用网络上各种各样的在线接口",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/erzaozi/vits-plugin"
+    },
+    "PackageName": ""
+  },
+  "neko-status-plugin": {
+    "Author": "二枣子, 0卡苏打水",
+    "Introduction": "可爱的服务器状态查看插件喵~",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/erzaozi/neko-status-plugin"
+    },
+    "PackageName": ""
+  },
+  "group-plugin": {
+    "Author": "Clarlotte",
+    "Introduction": "群管插件，功能写的很杂，部分功能bug，请多多包涵",
+    "Repository": {
+      "Gitee": "https://gitee.com/clarlotte/group-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "starlight-qsign": {
+    "Author": "wuliya336",
+    "Introduction": "向机器发送信息可自动获取可用的免费签名",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://gitlab.com/v17360963/starlight-qsign"
+    },
+    "PackageName": ""
+  },
+  "logier-plugin": {
+    "Author": "logier",
+    "Introduction": "表情包仓库、运势算卦、AI塔罗牌、资讯推送",
+    "Repository": {
+      "Gitee": "https://gitee.com/logier/logier-plugins",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "反击插件(fanji-plugin)": {
+    "Author": "@Admilk",
+    "Introduction": "清凉图调用插件！以及一些机器人有关的操作，更多内容安装插件后发送#反击帮助",
+    "Repository": {
+      "Gitee": "https://gitee.com/adrae/Fanji-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "GPTI插件(gpti-plugin)": {
+    "Author": "@0卡苏打水",
+    "Introduction": "一个GPT插件，简化了GPT模型的交互，无需令牌来访问GPT",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/CikeyQi/gpti-plugin"
+    },
+    "PackageName": ""
+  },
+  "米家插件(mijia-plugin)": {
+    "Author": "@0卡苏打水",
+    "Introduction": "米家插件，在任何地方控制家中米家生态设备",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/CikeyQi/mijia-plugin"
+    },
+    "PackageName": ""
+  },
+  "NovelAI绘图插件(nai-plugin)": {
+    "Author": "@0卡苏打水, @二枣子",
+    "Introduction": "再一个AI绘图插件，使用 NovelAI 接口，实现在QQ内使用 nai-diffusion-3 生成图片",
+    "Repository": {
+      "Gitee": "",
+      "Github": "https://github.com/CikeyQi/nai-plugin"
+    },
+    "PackageName": ""
+  },
+  "沙雕插件(tg-plugin)": {
+    "Author": "@misakime",
+    "Introduction": "自动推送沙雕图和新番消息的插件",
+    "Repository": {
+      "Gitee": "https://gitee.com/misakime/tg-plugin.git",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "风插件(wind-plugin)": {
+    "Author": "@风の迹",
+    "Introduction": "各大平台热搜榜单，搜索菜谱等功能，还附带轻量的修炼小游戏(适合大群，不会因为游戏功能太多导致刷屏)，更多其他功能仍在咕咕咕",
+    "Repository": {
+      "Gitee": "https://gitee.com/wind-trace-typ/wind-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "名字插件(mz-plugin)": {
+    "Author": "@名字",
+    "Introduction": "一些丰富的小功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/xyb12345678qwe/mz-plugin-alemon",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "互动插件(Gi-plugin)": {
+    "Author": "@千奈千祁",
+    "Introduction": "Yunzai娱乐性扩展插件，包含漂流瓶、每日随机幸运值、模拟高考查分、群历史文献、钓鱼小游戏等娱乐功能",
+    "Repository": {
+      "Gitee": "https://gitee.com/qiannqq/gi-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "重置版千羽插件(reset-qianyu-plugin)": {
+    "Author": "@think-first-sxs",
+    "Introduction": "对千羽插件进行重置，优化功能，一个咕咕咕插件",
+    "Repository": {
+      "Gitee": "https://gitee.com/think-first-sxs/reset-qianyu-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "饼干插件(biscuit-plugin)": {
+    "Author": "@Yummy-cookie",
+    "Introduction": "一些功能比如ping，ikun音乐",
+    "Repository": {
+      "Gitee": "https://gitee.com/Yummy-cookie/biscuit-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  "向日葵插件(xrk-plugin)": {
+    "Author": "@xrk",
+    "Introduction": "为机器人提供一些冒泡功能，如整点报时，全局表情(可以自定义图库)，还有一些小功能，建议搭配向日葵脚本一起使用",
+    "Repository": {
+      "Gitee": "https://gitee.com/xrk114514/xrk-plugin",
+      "Github": ""
+    },
+    "PackageName": ""
+  },
+  
+}
