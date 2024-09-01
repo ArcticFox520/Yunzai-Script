@@ -5,7 +5,7 @@ then
   NODE_VERSION=$(node -v)
   NODE_VERSION=${NODE_VERSION#v}
   MAJOR_VERSION=$(echo $NODE_VERSION | cut -d. -f1)
-  if [ "$MAJOR_VERSION" -gt 20 ]
+  if [ "$MAJOR_VERSION" -gt 18 ]
   then
     exit
   else
