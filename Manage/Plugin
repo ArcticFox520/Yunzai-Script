@@ -90,9 +90,9 @@ echo ${GitURL}
 function DependenciesInstall(){
 if CheckNetwork
 then
-  NPMMirror="https://registry.npmjs.org"
-else
   NPMMirror="https://registry.npmmirror.com"
+else
+  NPMMirror="https://registry.npmjs.org"
 fi
 case $(jq '.name' package.json) in
 yunzai-next)

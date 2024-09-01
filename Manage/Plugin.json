@@ -530,7 +530,7 @@
     "PackageName": "imgS-plugin"
   },
   "sunoai-plugin": {
-  "Author": "erzaozi",
+    "Author": "erzaozi",
     "Introduction": "AI 音乐生成插件，让你在输入框中拥有便捷的 AI 音乐创作体验。",
     "Repository": {
       "Gitee": "No",
@@ -538,5 +538,25 @@
     },
     "PluginName": "AI音乐生成",
     "PackageName": "sunoai-plugin"
+  },
+  "sunoai-plugin": {
+    "Author": "erzaozi",
+    "Introduction": "AI 音乐生成插件，让你在输入框中拥有便捷的 AI 音乐创作体验。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "erzaozi/sunoai-plugin"
+    },
+    "PluginName": "AI音乐生成",
+    "PackageName": "sunoai-plugin"
+  },
+  "logier-plugin": {
+    "Author": "logier",
+    "Introduction": "表情包仓库、运势算卦、AI塔罗牌、资讯推送。",
+    "Repository": {
+      "Gitee": "logier/logier-plugins",
+      "Github": "logier/logier-plugins"
+    },
+    "PluginName": "鸢尾花插件",
+    "PackageName": "No"
   }
 }
