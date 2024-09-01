@@ -100,7 +100,7 @@ case ${Number} in
     sed -i "s|${OldSignApiAddr}|sign_api_addr: ${NewSignApiAddr}|g" ${ConfigFile}
     API=$(grep sign_api_addr ${ConfigFile} | sed "s|sign_api_addr: ||g")
     $(TUISoftware) --title "${TitleText}" \
-    --msgbox "签名API已习惯为\n${API}" \
+    --msgbox "签名API已修改为\n${API}" \
     $(MsgboxSize)
   else
     exit

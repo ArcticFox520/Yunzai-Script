@@ -60,4 +60,19 @@ restart)
 log)
   LogBot ${BotName} ${COMMAND} ${Pm2Name}
   ;;
+SignApi)
+  ConfigFile="config/config/bot.yaml"
+  if [ ! -e ${ConfigFile} ]
+  then
+    echo -e ${red}错误 ${cyan}文件不存在${background}
+    exit
+  fi
+  NewSignApiAddr="$3"
+  OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
+  OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
+  NewSignApiAddr=$(echo ${NewSignApiAddr} | sed "s|sign_api_addr: ||g")
+  sed -i "s|${OldSignApiAddr}|sign_api_addr: ${NewSignApiAddr}|g" ${ConfigFile}
+  API=$(grep sign_api_addr ${ConfigFile} | sed "s|sign_api_addr: ||g")
+  echo -e ${green}签名API已经修改为 ${cyan}${API}${background}
+  ;;
 esac

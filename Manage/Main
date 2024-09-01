@@ -149,7 +149,7 @@ case ${Number} in
 ;;
 7)
   echo -e ${yellow}正在更新 ${yellow}${BotName}${background}
-  if git pull --force
+  if git pull
   then
     echo -e ${yellow}${BotName} ${green}更新完成${background}
   else
@@ -161,7 +161,7 @@ case ${Number} in
     then
       cd plugins/${i}
       echo -e ${yellow}正在更新 ${cyan}${i}${background}
-      if git pull --force
+      if git pull
       then
         echo -e ${yellow}${i} ${green}更新完成${background}
       else

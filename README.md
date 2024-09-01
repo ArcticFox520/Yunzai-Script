@@ -32,13 +32,20 @@
 
 ## 功能 Function
 ---
+- Tmux,Screen,Pm2会话管理
 - Yunzai-Next 部署与管理
 - Miao-Yunzai 部署与管理
 - TRSS-Yunzai 部署与管理
+- 插件包的安装与卸载
+- JS插件的安装与卸载
+- 插件及BOT的更新
+- FFmpeg安装
+- Termux安装
 - Bot 账号修改
 - 主人 账号修改
 - device 信息写入
 - 签名URL 修改
+- 各种快捷命令
 ---
 
 ## 安装
