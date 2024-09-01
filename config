@@ -229,12 +229,12 @@ then
     return 1
   fi
 else
-  if [ $(echo ${IpinfoIo} | jq .country) == "CN" ]
+  if echo ${IpinfoIo} | jq .country | grep -q "CN"
   then
     return 0
   else
     token=$(echo -e ${token})
-    if [ $(curl -sL ipinfo.io/json?token=${token} | jq .country) == "CN" ]
+    if curl -sL ipinfo.io/json?token=${token} | jq .country | grep -q "CN"
     then
       return 0
     else
