@@ -380,7 +380,7 @@ then
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
-  --yesno "是否删除 『 ${PluginNameAll} 』" \ 
+  --yesno "是否删除 ${PluginNameAll}" \ 
   $(MenuSize) \
   3>&1 1>&2 2>&3)
   then
