@@ -162,12 +162,11 @@ then
   Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
   Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
   GitURL=$(getGitURL ${i})
-  if $($(TUISoftware) --title "${TitleText}"  \
+  if ($(TUISoftware) --title "${TitleText}"  \
   --yes-button "安装" \
   --no-button "返回" \
   --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  $(MsgboxSize))
   then
     PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
     Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
@@ -252,12 +251,11 @@ then
   Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
   Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
   GitURL=$(getGitURL ${i})
-  if $($(TUISoftware) --title "${TitleText}"  \
+  if ($(TUISoftware) --title "${TitleText}"  \
   --yes-button "安装" \
   --no-button "返回" \
   --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  $(MsgboxSize))
   then
     PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
     Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
@@ -286,20 +284,18 @@ fi
 # --yes-button "简化版" \
 # --no-button "标准版" \
 # --yesno "请选择插件展示的标准" \
-# $(MsgboxSize) \
-# 3>&1 1>&2 2>&3)
+# $(MsgboxSize))
 # then
   # gitClonePlugin=gitClonePluginSimple
 # else
   # gitClonePlugin=gitClonePlugin
 # fi
 gitClonePlugin=gitClonePlugin
-if $($(TUISoftware) --title "${TitleText}"  \
+if ($(TUISoftware) --title "${TitleText}"  \
 --yes-button "单选" \
 --no-button "多选" \
 --yesno "请选择插件安装方式" \
-$(MsgboxSize) \
-3>&1 1>&2 2>&3)
+$(MsgboxSize))
 then
   MultipleChoice=false
   ChecklistMenu=menu
@@ -315,12 +311,11 @@ fi
 }
 function DeleteGitPlugin(){
 unset Options PluginNameAll
-if $($(TUISoftware) --title "${TitleText}"  \
+if ($(TUISoftware) --title "${TitleText}"  \
 --yes-button "单选" \
 --no-button "多选" \
 --yesno "请选择插件删除方式" \
-$(MsgboxSize) \
-3>&1 1>&2 2>&3)
+$(MsgboxSize))
 then
   MultipleChoice=false
   ChecklistMenu=menu
@@ -353,13 +348,12 @@ then
 fi
 if echo ${MultipleChoice} | grep -q false
 then
-  if $($(TUISoftware) \
+  if ($(TUISoftware) \
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  $(MsgboxSize))
   then
     echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
     rm -rf plugins/${PluginNameAll}
@@ -375,14 +369,13 @@ then
     return 0
   fi
 elif echo ${MultipleChoice} | grep -q true
-then 
-  if $($(TUISoftware) \
+then
+  if ($(TUISoftware) \
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
-  --yesno "是否删除 ${PluginNameAll}" \ 
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  --yesno "是否删除 ${PluginNameAll}" \
+  $(MsgboxSize))
   then
     for i in ${PluginNameAll}
     do
@@ -401,12 +394,11 @@ function InstallJSPlugin(){
 function DownloadFOLDER(){
 unset Options
 FOLDERPath="/sdcard/Download"
-if $($(TUISoftware) --title "${TitleText}"  \
+if ($(TUISoftware) --title "${TitleText}"  \
 --yes-button "单选" \
 --no-button "多选" \
 --yesno "请选择插件安装方式" \
-$(MsgboxSize) \
-3>&1 1>&2 2>&3)
+$(MsgboxSize))
 then
   MultipleChoice=false
   ChecklistMenu=menu
@@ -490,12 +482,11 @@ fi
 function QQFOLDER(){
 unset Options
 FOLDERPath="/sdcard/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv"
-if $($(TUISoftware) --title "${TitleText}"  \
+if ($(TUISoftware) --title "${TitleText}"  \
 --yes-button "单选" \
 --no-button "多选" \
 --yesno "请选择插件安装方式" \
-$(MsgboxSize) \
-3>&1 1>&2 2>&3)
+$(MsgboxSize))
 then
   MultipleChoice=false
   ChecklistMenu=menu
@@ -590,12 +581,11 @@ esac
 }
 function DeleteJSPlugin(){
 unset Options PluginNameAll
-if $($(TUISoftware) --title "${TitleText}"  \
+if ($(TUISoftware) --title "${TitleText}"  \
 --yes-button "单选" \
 --no-button "多选" \
 --yesno "请选择插件删除方式" \
-$(MsgboxSize) \
-3>&1 1>&2 2>&3)
+$(MsgboxSize))
 then
   MultipleChoice=false
   ChecklistMenu=menu
@@ -628,13 +618,12 @@ then
 fi
 if echo ${MultipleChoice} | grep -q false
 then
-  if $($(TUISoftware) \
+  if ($(TUISoftware) \
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  $(MsgboxSize))
   then
     echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
     rm -rf plugins/example/${PluginNameAll}
@@ -651,13 +640,12 @@ then
   fi
 elif echo ${MultipleChoice} | grep -q true
 then
-  if $($$(TUISoftware) \
+  if ($(TUISoftware) \
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MsgboxSize) \
-  3>&1 1>&2 2>&3)
+  $(MsgboxSize))
   then
     for i in ${PluginNameAll}
     do
