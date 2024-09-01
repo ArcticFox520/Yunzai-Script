@@ -146,7 +146,7 @@ case ${Number} in
   fi
 ;;
 6)
-  bash Plugin
+  bash $AFYZHOME/Manage/Plugin
   SecondMenu
 ;;
 7)

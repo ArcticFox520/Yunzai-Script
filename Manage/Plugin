@@ -1,6 +1,6 @@
 #!/bin/env bash
-source ${AFYZHOME}/config
-PluginListFile="${AFYZHOME}/Manage/Plugin.json"
+source $AFYZHOME/config
+PluginListFile="$AFYZHOME/Manage/Plugin.json"
 TitleText="AF-Plugin"
 
 function InstallGitPlugin(){
