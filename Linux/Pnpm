@@ -22,6 +22,10 @@ pnpm config set registry ${NPMMirror}
 pnpm config set registry ${NPMMirror}
 echo -e ${green}已设置为 ${yellow}${NPMMirror}${background}
 echo -e ${green}正在安装 ${yellow}PM2${background}
+if $(pm2 -v > /dev/null 2>&1)
+then
+  exit 0
+fi
 until npm install -g pm2
 do
   echo -e ${cyan}安装失败 ${yellow}三秒后重试${background}

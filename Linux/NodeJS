@@ -5,9 +5,11 @@ then
   NODE_VERSION=$(node -v)
   NODE_VERSION=${NODE_VERSION#v}
   MAJOR_VERSION=$(echo $NODE_VERSION | cut -d. -f1)
-  if [ ! "$MAJOR_VERSION" -gt 18 ]
+  if [ "$MAJOR_VERSION" -gt 20 ]
   then
-    apt autoremove -y nodejs 
+    exit
+  else
+    apt autoremove -y nodejs
   fi
 fi
 if CheckNetwork
@@ -46,3 +48,8 @@ echo '
 #Node.JS
 export PATH=$PATH:/usr/local/NodeJS/bin
 ' >> /etc/profile
+export PATH=$PATH:/usr/local/NodeJS/bin
+if ! $(node -v > /dev/null 2>&1)
+then
+  ErrorReturn
+fi

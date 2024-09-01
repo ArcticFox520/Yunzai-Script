@@ -8,7 +8,7 @@ purple="\033[35m"
 cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
-
+token="\u0037\u0037\u0038\u0037\u0030\u0036\u0034\u0034\u0066\u0061\u0032\u0033\u0063\u0031"
 GithubMirror="https://mirrors.chenby.cn/"
 
 if [ -x /usr/local/NodeJS/bin/node ]
@@ -23,14 +23,19 @@ then
 fi
 
 function MenuTips(){
-  echo "当前时期 $(date +"%Y-%m-%d %H:%M") | 请选择操作"
+  echo "当前时期 $(date +"%Y-%m-%d %H:%M")"
 }
 
 function gitclone(){
+if [ -d $2 ]
+then
+  echo -e ${red}目标路径已经存在${background}
+  return 1
+fi
 if echo $1 | grep -q gitee
 then
   git clone --depth=1 $1 $2
-  ReturnBcak
+  return 0
 fi
 if CheckNetwork
 then
@@ -214,21 +219,27 @@ echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
 }
 
 function CheckNetwork(){
-country=$(curl -sL ipinfo.io  | jq .country)
-if [ ! -z ${country} ]
+IpinfoIo=$(curl -sL ipinfo.io/json)
+if [ -z "${IpinfoIo}" ]
 then
-  if echo ${country} | grep -q CN
+  if SelectRegion
   then
     return 0
   else
     return 1
   fi
 else
-  if SelectRegion
+  if [ $(echo ${IpinfoIo} | jq .country) == "CN" ]
   then
     return 0
   else
-    return 1
+    token=$(echo -e ${token})
+    if [ $(curl -sL ipinfo.io/json?token=${token} | jq .country) == "CN" ]
+    then
+      return 0
+    else
+      return 1
+    fi
   fi
 fi
 }

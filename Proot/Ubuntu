@@ -81,6 +81,12 @@ then
 	echo -e ${blue}[${red}*${blue}] ${cyan}错误 ${yellow}此脚本仅能够在termux运行${background}
 fi
 
+if ping -c 1 google.com 2>&1 > /dev/null
+then
+  echo -e ${blue}[${red}*${blue}] ${cyan}错误 ${yellow}请不要开加速器${background}
+  exit
+fi
+
 if ! grep -q bfsu $PREFIX/etc/apt/sources.list
 then
   echo '# The termux repository mirror from BFSU:

@@ -1,3 +1,781 @@
 #!/bin/env bash
-source /config
+source ${AFYZHOME}/config
+PluginListFile="${AFYZHOME}/Manage/Plugin.json"
+TitleText="AF-Plugin"
 
+function InstallGitPlugin(){
+unset PluginNameAll LocalPluginGitList LocalPackageNameList InstalledPlugin Options j i
+function getPluginList(){
+CloudPluginNameList="$(jq -r 'keys[]' ${PluginListFile})"
+LocalPluginNameList="$(ls plugins -I example -I other -I system)"
+for i in ${LocalPluginNameList}
+do
+  if [ -e plugins/${i}/.git/config ]
+  then
+    j="$(grep url ./plugins/${i}/.git/config | sed 's|url =||g')"
+  fi
+  LocalPluginGitList="${j} ${LocalPackageNameList}"
+done
+for i in ${LocalPluginNameList}
+do
+  if [ -e plugins/${i}/package.json ]
+  then
+    j="$(jq -r '.name' plugins/${i}/package.json)"
+  fi
+  LocalPackageNameList="${j} ${LocalPackageNameList}"
+done
+unset i
+n=0
+for i in ${CloudPluginNameList}
+do
+  n=$((${n}+1))
+  echo -en '\r'${yellow}正在处理插件数据 ${green}已处理 ${cyan}${n} 项${background}
+  CloudPluginGitee=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Gitee' ${PluginListFile}"))
+  CloudPluginGithub=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Github' ${PluginListFile}"))
+  CloudPackageName=$(eval $(echo "jq -r '.[\"${i}\"].PackageName' ${PluginListFile}"))
+  if [ -d plugins/${i} ]
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGitee}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGithub}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPackageNameList} | grep -q ${CloudPackageName}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}" 
+  else
+    InstallationStatus="[未安装]"
+  fi
+  Options="${Options} ${i} ${InstallationStatus} ${OFF}"
+done
+echo
+}
+function getGitURL(){
+j=$1
+if CheckNetwork
+then
+  GitSite=Gitee
+else
+  GitSite=Github
+fi
+local Git=$(eval $(echo "jq -r '.[\"${j}\"].Repository.${GitSite}' ${PluginListFile}"))
+if [ ${Git} == No ]
+then
+  case ${GitSite} in
+    Gitee)
+      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
+    ;;
+    Github)
+      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
+    ;;
+  esac
+else
+  case ${GitSite} in
+    Gitee)
+      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
+    ;;
+    Github)
+      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
+    ;;
+  esac
+fi
+echo ${GitURL}
+}
+function DependenciesInstall(){
+if CheckNetwork
+then
+  NPMMirror="https://registry.npmjs.org"
+else
+  NPMMirror="https://registry.npmmirror.com"
+fi
+case $(jq '.name' package.json) in
+yunzai-next)
+  pkg=yarn
+  ;;
+*)
+  pkg=pnpm
+  ;;
+esac
+if [ -e plugins/${i}/package.json ]
+then
+  cd plugins/${i}
+  echo -e ${yellow}正在安装 ${cyan}插件依赖${background}
+  if ${pkg} install --registry=${NPMMirror}
+  then
+    echo -e ${green}安装成功${background}
+    return 0
+  else
+    echo -e ${red}安装失败${background}
+    return 1
+  fi
+  cd ..
+fi
+}
+function gitClonePlugin(){
+if [ -z "${Options}" ]
+then
+  getPluginList
+fi
+PluginNameAll=$($(TUISoftware) \
+--title "${TitleText}" \
+--${ChecklistMenu} "${Tips}" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 0
+fi
+PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
+if [ -z "${PluginNameAll}" ]
+then
+  return 0
+fi
+if echo ${MultipleChoice} | grep -q true
+then
+  for i in ${PluginNameAll}
+  do
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    DependenciesInstall
+  done
+  echo -en ${cyan}命令执行完成 ${cyan}回车返回${background};read
+  echo
+elif echo ${MultipleChoice} | grep -q false
+then
+  i=${PluginNameAll}
+  PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+  Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+  Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
+  GitURL=$(getGitURL ${i})
+  if $($(TUISoftware) --title "${TitleText}"  \
+  --yes-button "安装" \
+  --no-button "返回" \
+  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
+  $(MsgboxSize) \
+  3>&1 1>&2 2>&3)
+  then
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    if DependenciesInstall
+    then
+      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
+      echo
+    fi
+  else
+    gitClonePlugin
+  fi
+fi
+}
+function gitClonePluginSimple(){
+unset Options i j n
+CloudPluginNameList="$(jq -r 'keys[]' ${PluginListFile})"
+for i in ${CloudPluginNameList}
+do  
+  PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+  Options="${Options} ${i} ${PluginName} ${OFF}"
+done
+PluginNameAll=$($(TUISoftware) \
+--title "${TitleText}" \
+--${ChecklistMenu} "${Tips}" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 0
+fi
+PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
+if [ -z "${PluginNameAll}" ]
+then
+  return 0
+fi
+if echo ${MultipleChoice} | grep -q true
+then
+  for i in ${PluginNameAll}
+  do
+    if echo ${InstalledPluginList} | grep -q ${i}
+    then
+      echo -e ${yellow}已安装 ${cyan}${i}插件${background}
+      echo -e ${yellow}跳过${i}插件的安装${background}
+      continue
+    fi
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    DependenciesInstall
+  done
+  echo -en ${cyan}命令执行完成 ${cyan}回车返回${background};read
+  echo
+elif echo ${MultipleChoice} | grep -q false
+then
+  if echo ${InstalledPluginList} | grep -q ${i}
+  then
+    echo -e ${yellow}已安装 ${cyan}${i}插件${background}
+    echo -e ${yellow}跳过${i}插件的安装${background}
+    return 0
+  fi
+  i=${PluginNameAll}
+  PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+  Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+  Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
+  GitURL=$(getGitURL ${i})
+  if $($(TUISoftware) --title "${TitleText}"  \
+  --yes-button "安装" \
+  --no-button "返回" \
+  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
+  $(MsgboxSize) \
+  3>&1 1>&2 2>&3)
+  then
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    if DependenciesInstall
+    then
+      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
+      echo
+    fi
+  else
+    gitClonePluginSimple
+  fi
+fi
+}
+# if $($(TUISoftware) --title "${TitleText}"  \
+# --yes-button "简化版" \
+# --no-button "标准版" \
+# --yesno "请选择插件展示的标准" \
+# $(MsgboxSize) \
+# 3>&1 1>&2 2>&3)
+# then
+  # gitClonePlugin=gitClonePluginSimple
+# else
+  # gitClonePlugin=gitClonePlugin
+# fi
+gitClonePlugin=gitClonePlugin
+if $($(TUISoftware) --title "${TitleText}"  \
+--yes-button "单选" \
+--no-button "多选" \
+--yesno "请选择插件安装方式" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  MultipleChoice=false
+  ChecklistMenu=menu
+  unset OFF Tips
+  ${gitClonePlugin}
+else
+  MultipleChoice=true
+  ChecklistMenu=checklist
+  OFF=OFF
+  Tips="[空格选择 回车确定 空选返回]"
+  ${gitClonePlugin}
+fi
+}
+function DeleteGitPlugin(){
+unset Options PluginNameAll
+if $($(TUISoftware) --title "${TitleText}"  \
+--yes-button "单选" \
+--no-button "多选" \
+--yesno "请选择插件删除方式" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  MultipleChoice=false
+  ChecklistMenu=menu
+  unset OFF Tips
+else
+  MultipleChoice=true
+  ChecklistMenu=checklist
+  OFF=OFF
+  Tips="[空格选择 回车确定 空选返回]"
+fi
+LocalPluginNameList="$(ls plugins -I example -I other -I system)"
+for i in ${LocalPluginNameList}
+do
+  Options="${Options} ${i} 🍥 ${OFF}"
+done
+PluginNameAll=$($(TUISoftware) \
+--title "${TitleText}" \
+--${ChecklistMenu} "${Tips}" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 0
+fi
+PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
+if [ -z "${PluginNameAll}" ]
+then
+  return 0
+fi
+if echo ${MultipleChoice} | grep -q false
+then
+  if $($(TUISoftware) \
+  --title "${TitleText}" \
+  --yes-button "删除" \
+  --no-button "返回" \
+  --yesno "是否删除 ${PluginNameAll}" \
+  $(MenuSize) \
+  3>&1 1>&2 2>&3)
+  then
+    echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
+    rm -rf plugins/${PluginNameAll}
+    if [ -d plugins/${PluginNameAll} ]
+    then
+      echo -en ${red}删除失败 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${green}删除成功 ${cyan}回车返回${background};read
+      echo
+    fi
+  else
+    return 0
+  fi
+elif echo ${MultipleChoice} | grep -q true
+then
+  if $($$(TUISoftware) \
+  --title "${TitleText}" \
+  --yes-button "删除" \
+  --no-button "返回" \
+  --yesno "是否删除 ${PluginNameAll}" \
+  $(MenuSize) \
+  3>&1 1>&2 2>&3)
+  then
+    for i in ${PluginNameAll}
+    do
+      echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
+      rm -rf plugins/${i} 2>&1 > /dev/null
+      rm -rf plugins/${i} 2>&1 > /dev/null
+    done
+    echo -en ${green}删除成功 ${cyan}回车返回${background};read
+    echo
+  else
+    return 0
+  fi
+fi
+}
+function InstallJSPlugin(){ 
+function DownloadFOLDER(){
+unset Options
+FOLDERPath="/sdcard/Download"
+if $($(TUISoftware) --title "${TitleText}"  \
+--yes-button "单选" \
+--no-button "多选" \
+--yesno "请选择插件安装方式" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  MultipleChoice=false
+  ChecklistMenu=menu
+  unset OFF Tips
+else
+  MultipleChoice=true
+  ChecklistMenu=checklist
+  OFF=OFF
+  Tips="[空格选择 回车确定 空选返回]"
+fi
+if [ -d ${FOLDERPath} ]
+then
+  if [ ! -e ${FOLDERPath}/*.js ]
+  then
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "没有JS文件" \
+    $(MsgboxSize)
+    return 0
+  fi
+  JSPluginList=$(ls ${FOLDERPath}/*.js | sed "s|${FOLDERPath}/||g")
+  for i in ${JSPluginList}
+  do
+    Options="${Options} ${i} 🍥 ${OFF}"
+  done
+  JSPluginAll=$($(TUISoftware) \
+  --title "${TitleText}" \
+  --${ChecklistMenu} "${Tips}" \
+  $(MenuSize) \
+  ${Options} \
+  3>&1 1>&2 2>&3)
+  if [ $? == 1 ]
+  then
+    return 0
+  fi
+  JSPluginAll=$(echo ${JSPluginAll} | sed 's|"||g')
+  if [ -z "${JSPluginAll}" ]
+  then
+    return 0
+  fi
+  for i in ${JSPluginAll}
+  do
+    cp -f ${FOLDERPath}/${i} plugins/example
+    echo -e ${cyan}${i} ${green}安装完成${background}
+  done
+  echo -en ${green}命令执行完成 ${cyan}回车返回${background};read
+  echo
+else
+  $(TUISoftware) --title "${TitleText}" \
+  --msgbox "文件夹不存在" \
+  $(MsgboxSize)
+  return 0
+fi
+}
+function GitRawURL(){
+echo -en ${green}请输入链接: ${background};read JSURL
+echo
+if [ -z "$JSURL" ]
+then
+  echo -en ${red}错误 ${cyan}回车返回${background};read
+  echo
+fi
+if [[ ${JSURL} == *git* ]] && [[ ${JSURL} == *.js ]]
+then
+JSFile=`echo ${JSURL} | awk -F/ '{print $NF}'`
+  if [[ ${JSURL} = *github* ]]
+  then
+    JSURL=$(echo ${JSURL} | sed "s|blob/||g" | sed "s|github|raw.githubusercontent|g")
+    curl -sL ${GitHubMirror}/${JSURL} > plugins/example/${JSFile}
+  elif [[ ${JSURL} = *gitee* ]]
+  then
+    JSURL=$(echo ${JSURL} | sed 's|blob|raw|g')
+    curl -sL ${JSURL} > plugins/example/${JSFile}
+  fi
+  echo -en ${cyan}安装完成 回车返回${background};read
+else
+  echo -e ${red}错误 链接不来至于Git仓库${background}
+  echo -en ${cyan}回车返回${background};read
+  Main
+fi
+}
+function QQFOLDER(){
+unset Options
+FOLDERPath="/sdcard/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv"
+if $($(TUISoftware) --title "${TitleText}"  \
+--yes-button "单选" \
+--no-button "多选" \
+--yesno "请选择插件安装方式" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  MultipleChoice=false
+  ChecklistMenu=menu
+  unset OFF Tips
+else
+  MultipleChoice=true
+  ChecklistMenu=checklist
+  OFF=OFF
+  Tips="[空格选择 回车确定 空选返回]"
+fi
+if [ -d ${FOLDERPath}/ ]
+then
+  if [ ! -e ${FOLDERPath}/*.js ]
+  then
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "没有JS文件" \
+    $(MsgboxSize)
+    return 0
+  fi
+  JSPluginList=$(ls ${FOLDERPath}/*.js | sed 's|${FOLDERPath}/||g')
+  for i in ${JSPluginList}
+  do
+    Options="${Options} ${i} 🍥 ${OFF}"
+  done
+  JSPluginAll=$($(TUISoftware) \
+  --title "${TitleText}" \
+  --${ChecklistMenu} "${Tips}" \
+  $(MenuSize) \
+  ${Options} \
+  3>&1 1>&2 2>&3)
+  if [ $? == 1 ]
+  then
+    return 0
+  fi
+  JSPluginAll=$(echo ${JSPluginAll} | sed 's|"||g')
+  if [ -z "${JSPluginAll}" ]
+  then
+    return 0
+  fi
+  for i in ${JSPluginAll}
+  do
+    cp -f ${FOLDERPath}/${i} plugins/example
+    echo -e ${cyan}${i} ${green}安装完成${background}
+  done
+  echo -en ${green}命令执行完成 ${cyan}回车返回${background};read
+  echo
+else
+  $(TUISoftware) --title "${TitleText}" \
+  --msgbox "文件夹不存在" \
+  $(MsgboxSize)
+  return 0
+fi
+}
+function FileRaw(){
+echo -en ${green}请输入链接: ${background};read JSURL
+if [[ ${JSURL} != https://* ]] && [[ ${JSURL} != *.js ]];then
+  echo -e ${red}输入错误${background}
+  echo -en ${cyan}回车返回${background};read
+  return
+fi
+JSFile=`echo ${JSURL} | awk -F/ '{print $NF}'`
+curl -sL ${JSURL} > plugins/example/${JSFile}
+echo -en ${cyan}安装完成 回车返回${background};read
+}
+Number=$($(TUISoftware) \
+--title "${TitleText}" \
+--menu "$(MenuTips)" \
+$(MenuSize) \
+"1" "~/Download" \
+"2" "Gitee/Github" \
+"3" "QQ文件夹" \
+"4" "文件直链" \
+"0" "  返回  " \
+3>&1 1>&2 2>&3)
+case ${Number} in
+1)
+  DownloadFOLDER
+  ;;
+2)
+  GitRawURL
+  ;;
+3)
+  QQFOLDER
+  ;;
+4)
+  FileRaw
+  ;;
+0)
+  return 0
+  ;;
+esac
+}
+function DeleteJSPlugin(){
+unset Options PluginNameAll
+if $($(TUISoftware) --title "${TitleText}"  \
+--yes-button "单选" \
+--no-button "多选" \
+--yesno "请选择插件删除方式" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  MultipleChoice=false
+  ChecklistMenu=menu
+  unset OFF Tips
+else
+  MultipleChoice=true
+  ChecklistMenu=checklist
+  OFF=OFF
+  Tips="[空格选择 回车确定 空选返回]"
+fi
+JSPluginList="$(ls plugins/example)"
+for i in ${JSPluginList}
+do
+  Options="${Options} ${i} 🍥 ${OFF}"
+done
+PluginNameAll=$($(TUISoftware) \
+--title "${TitleText}" \
+--${ChecklistMenu} "${Tips}" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 0
+fi
+PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
+if [ -z "${PluginNameAll}" ]
+then
+  return 0
+fi
+if echo ${MultipleChoice} | grep -q false
+then
+  if $($(TUISoftware) \
+  --title "${TitleText}" \
+  --yes-button "删除" \
+  --no-button "返回" \
+  --yesno "是否删除 ${PluginNameAll}" \
+  $(MenuSize) \
+  3>&1 1>&2 2>&3)
+  then
+    echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
+    rm -rf plugins/example/${PluginNameAll}
+    if [ -e plugins/example/${PluginNameAll} ]
+    then
+      echo -en ${red}删除失败 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${green}删除成功 ${cyan}回车返回${background};read
+      echo
+    fi
+  else
+    return 0
+  fi
+elif echo ${MultipleChoice} | grep -q true
+then
+  if $($$(TUISoftware) \
+  --title "${TitleText}" \
+  --yes-button "删除" \
+  --no-button "返回" \
+  --yesno "是否删除 ${PluginNameAll}" \
+  $(MenuSize) \
+  3>&1 1>&2 2>&3)
+  then
+    for i in ${PluginNameAll}
+    do
+      echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
+      rm -rf plugins/example/${i} 2>&1 > /dev/null
+      rm -rf plugins/example/${i} 2>&1 > /dev/null
+    done
+    echo -en ${green}删除成功 ${cyan}回车返回${background};read
+    echo
+  else
+    return 0
+  fi
+fi
+}
+function CustomInstall(){
+function DependenciesInstall(){
+if CheckNetwork
+then
+  NPMMirror="https://registry.npmjs.org"
+else
+  NPMMirror="https://registry.npmmirror.com"
+fi
+case $(jq '.name' package.json) in
+yunzai-next)
+  pkg=yarn
+  ;;
+*)
+  pkg=pnpm
+  ;;
+esac
+if [ -e plugins/${i}/package.json ]
+then
+  cd plugins/${i}
+  echo -e ${yellow}正在安装 ${cyan}插件依赖${background}
+  if ${pkg} install --registry=${NPMMirror}
+  then
+    echo -e ${green}安装成功${background}
+    return 0
+  else
+    echo -e ${red}安装失败${background}
+    return 1
+  fi
+  cd ..
+fi
+}
+if ! GitURL=$($(TUISoftware) --title "${TitleText}" \
+--yes-button "确认" \
+--no-button "返回" \
+--inputbox "请输入Git仓库链接" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  return 0
+fi
+if ! PluginName=$($(TUISoftware) --title "${TitleText}" \
+--yes-button "确认" \
+--no-button "返回" \
+--inputbox "请输入文件夹名称" \
+$(MsgboxSize) \
+3>&1 1>&2 2>&3)
+then
+  return 0
+fi
+if gitclone ${GitURL} plugins/${PluginName}
+then
+  DependenciesInstall
+else
+  echo -en ${red}安装失败 ${cyan}回车返回${background};read
+  echo
+fi
+unset GitURL PluginName
+}
+function PluginMainMenu(){
+Number=$($(TUISoftware) \
+--title "${TitleText}" \
+--menu "$(MenuTips)" \
+$(MenuSize) \
+"1" "安装Git插件" \
+"2" "卸载Git插件" \
+"3" "安装JS插件" \
+"4" "卸载JS插件" \
+"5" "自定义安装" \
+"0" "  返回  " \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 1
+fi
+case ${Number} in
+1)
+  InstallGitPlugin
+  ;;
+2)
+  DeleteGitPlugin
+  ;;
+3)
+  InstallJSPlugin
+  ;;
+4)
+  DeleteJSPlugin
+  ;;
+5)
+  CustomInstall
+  ;;
+0)
+  exit 0
+  ;;
+esac
+}
+function WhilePluginMainMenu(){
+  while true
+  do
+    PluginMainMenu
+    if [ $? == 1 ]
+    then
+      exit 0
+    fi
+    WhilePluginMainMenu
+  done
+}
+WhilePluginMainMenu

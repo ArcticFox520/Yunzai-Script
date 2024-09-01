@@ -25,7 +25,7 @@ case ${Number} in
     then
       if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
       then
-        if ($(TUISoftware) --title "${TitleText}"  \
+        if $($(TUISoftware) --title "${TitleText}"  \
         --yes-button "打开日志" \
         --no-button "返回菜单" \
         --yesno "${BotName} [启动成功]" \
@@ -97,12 +97,12 @@ case ${Number} in
     then
       if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
       then
-        if $(TUISoftware) --title "${TitleText}"  \
+        if $($(TUISoftware) --title "${TitleText}"  \
         --yes-button "打开日志" \
         --no-button "返回菜单" \
         --yesno "${BotName} [重启成功]" \
         $(MsgboxSize) \
-        3>&1 1>&2 2>&3
+        3>&1 1>&2 2>&3)
         then
           if ! Error=$(ManageSession $(Session) log "${BotName}")
           then
@@ -146,7 +146,7 @@ case ${Number} in
   fi
 ;;
 6)
-  bash $AFYZHOME/Manage/Plugin ${TitleText}
+  bash Plugin
   SecondMenu
 ;;
 7)
@@ -259,7 +259,7 @@ case ${Number} in
       Pm2Name="yunzai-next"
       SecondMenu
     else
-      if ($(TUISoftware) --title "AF-Script"  \
+      if $($(TUISoftware) --title "AF-Script"  \
       --yes-button "安装" \
       --no-button "返回" \
       --yesno "Yunzai-Next [未安装]\n是否立刻开始安装" \
@@ -288,7 +288,7 @@ case ${Number} in
       Pm2Name="Miao-Yunzai"
       SecondMenu
     else
-      if ($(TUISoftware) --title "AF-Script"  \
+      if $($(TUISoftware) --title "AF-Script"  \
       --yes-button "安装" \
       --no-button "返回" \
       --yesno "Miao-Yunzai [未安装]\n是否立刻开始安装" \
@@ -317,7 +317,7 @@ case ${Number} in
       Pm2Name="TRSS-Yunzai"
       SecondMenu
     else
-      if ($(TUISoftware) --title "AF-Script"  \
+      if $($(TUISoftware) --title "AF-Script"  \
       --yes-button "安装" \
       --no-button "返回" \
       --yesno "Yunzai-TRSS [未安装]\n是否立刻开始安装" \
