@@ -2,14 +2,13 @@
 source ../config
 if $(node -v > /dev/null 2>&1)
 then
-  NODE_VERSION=$(node -v)
-  NODE_VERSION=${NODE_VERSION#v}
-  MAJOR_VERSION=$(echo $NODE_VERSION | cut -d. -f1)
-  if [ "$MAJOR_VERSION" -gt 18 ]
+  NodeVersion=$(node -v)
+  NodeVersion=${NodeVersion:1:2}
+  if [ ${NodeVersion} -gt 18 ] || [ ${NodeVersion} -eq 18 ]
   then
-    exit
+    exit 0
   else
-    apt autoremove -y nodejs
+    apt -y autoremove nodejs
   fi
 fi
 if CheckNetwork
