@@ -358,7 +358,7 @@ then
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MenuSize) \
+  $(MsgboxSize) \
   3>&1 1>&2 2>&3)
   then
     echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
@@ -375,13 +375,13 @@ then
     return 0
   fi
 elif echo ${MultipleChoice} | grep -q true
-then
+then 
   if $($(TUISoftware) \
   --title "${TitleText}" \
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \ 
-  $(MenuSize) \
+  $(MsgboxSize) \
   3>&1 1>&2 2>&3)
   then
     for i in ${PluginNameAll}
@@ -633,7 +633,7 @@ then
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MenuSize) \
+  $(MsgboxSize) \
   3>&1 1>&2 2>&3)
   then
     echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
@@ -656,7 +656,7 @@ then
   --yes-button "删除" \
   --no-button "返回" \
   --yesno "是否删除 ${PluginNameAll}" \
-  $(MenuSize) \
+  $(MsgboxSize) \
   3>&1 1>&2 2>&3)
   then
     for i in ${PluginNameAll}
