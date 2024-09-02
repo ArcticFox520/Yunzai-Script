@@ -341,7 +341,8 @@ case ${Number} in
       else
         MainMenu
       fi
-    fi   
+    fi
+  ;;
   4)
     exec bash -i
   ;;
