@@ -9,7 +9,6 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
-
 function Random(){
 echo $((RANDOM % 3))
 }

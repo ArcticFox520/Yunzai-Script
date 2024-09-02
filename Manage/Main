@@ -1,6 +1,5 @@
 #!/bin/env bash
 source ../config
-cd $HOME
 
 if ping -c 1 api.arcticfox.top 2>&1 > /dev/null
 then
