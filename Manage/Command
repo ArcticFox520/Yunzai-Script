@@ -94,6 +94,24 @@ up)
     echo -e ${red}更新失败${background}
   fi
   ;;
+List)
+  echo -e "
+${yellow}当前${bule}可用${yellow}版本列表${background}
+=========
+ ${cyan}9.0.90${background}
+ ${cyan}9.0.85${background}
+ ${cyan}9.0.81${background}
+ ${cyan}9.0.80${background}
+ ${cyan}9.0.75${background}
+ ${cyan}9.0.71${background}
+ ${cyan}9.0.70${background}
+ ${cyan}9.0.65${background}
+ ${cyan}9.0.60${background}
+ ${cyan}9.0.56${background}
+=========
+  "
+  exit
+  ;;
 esac
 case $2 in
 start)
@@ -109,20 +127,27 @@ log)
   LogBot ${BotName} ${COMMAND} ${Pm2Name}
   ;;
 SignApi)
+  if [ -z "$4" ]
+  then
+    NewSignApiAddr="$3"
+  else
+    NewSignApiAddr="$3&ver=$4"
+  fi
   ConfigFile="config/config/bot.yaml"
   if [ ! -e ${ConfigFile} ]
   then
     echo -e ${red}错误 ${cyan}文件不存在${background}
     exit
   fi
-  NewSignApiAddr="$3"
   OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
   OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
   NewSignApiAddr=$(echo ${NewSignApiAddr} | sed "s|sign_api_addr: ||g")
   sed -i "s|${OldSignApiAddr}|sign_api_addr: ${NewSignApiAddr}|g" ${ConfigFile}
   API=$(grep sign_api_addr ${ConfigFile} | sed "s|sign_api_addr: ||g")
+  cat $AFYZHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
   echo -e ${green}签名API已经修改为 ${cyan}${API}${background}
   ;;
-up)
-  
+UpBot)
+  git pull
+  ;;
 esac
