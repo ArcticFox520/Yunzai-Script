@@ -1,6 +1,11 @@
 #!/bin/env bash
 source ../config
 
+if ping -c 1 api.arcticfox.top 2>&1 > /dev/null
+then
+  curl -sL -o "/dev/null" https://api.arcticfox.top/add
+fi
+
 function SecondMenu(){
 Number=$($(TUISoftware) \
 --title "${TitleText}" \

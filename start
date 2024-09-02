@@ -9,8 +9,50 @@ cyan="\033[36m"
 white="\033[37m"
 background="\033[0m"
 
+
+function Random(){
+echo $((RANDOM % 3))
+}
+
+function Termux(){
+case $(Random) in
+1)
+  if ! am start com.miHoYo.Yuanshen/com.miHoYo.GetMobileInfo.MainActivity
+  then
+    if ! am start -a com.miHoYo.cloudgames.ys/com.mihoyo.cloudgame.ui.SplashActivity
+    then
+      am start -a android.intent.action.VIEW -d "https://ys.mihoyo.com/cloud"
+    fi
+  fi
+  ;;
+2)
+  if ! am start com.miHoYo.hkrpg/com.mihoyo.combosdk.ComboSDKActivity
+  then
+    if ! am start com.miHoYo.cloudgames.hkrpg/com.mihoyo.cloudgame.ui.SplashActivity
+    then
+      am start -a android.intent.action.VIEW -d "https://sr.mihoyo.com/cloud"
+    fi
+  fi
+  ;;
+3)
+  if ! am start com.miHoYo.Nap/com.mihoyo.combosdk.ComboSDKActivity
+  then
+    am start -a android.intent.action.VIEW -d "https://zzz.mihoyo.com"
+  fi
+  ;;
+*)
+  echo -e ${red}本脚本禁止在Termux环境运行${background}
+  ;;
+esac
+}
+
 if [ ! "$(uname)" = "Linux" ];then
     echo -e ${red}请使用linux!${background}
+    exit
+fi
+
+if [ ! "$(uname -o)" = "Android" ];then
+    Termux
     exit
 fi
 
