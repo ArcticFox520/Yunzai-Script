@@ -558,5 +558,115 @@
     },
     "PluginName": "鸢尾花插件",
     "PackageName": "No"
+  },
+  "cb-plugin": {
+    "Author": "Sakura1618",
+    "Introduction": "尘白禁区游戏类拓展插件。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "Sakura1618/cb-plugin"
+    },
+    "PluginName": "尘白禁区",
+    "PackageName": "No"
+  },
+  "eso": {
+    "Author": "logier",
+    "Introduction": "上古卷轴OL游戏扩展类。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "ChicorSun/eso"
+    },
+    "PluginName": "上古卷轴OL",
+    "PackageName": "eso"
+  },
+  "sv-plugin": {
+    "Author": "LCY星动",
+    "Introduction": "星露谷物语xlg更新,村民名片,物品查询,材料查询,资源查询,BOSS查询。",
+    "Repository": {
+      "Gitee": "xingdonglcy/sv-plugin",
+      "Github": "No"
+    },
+    "PluginName": "星露谷插件",
+    "PackageName": "No"
+  },
+  "Elysian-Realm-plugin": {
+    "Author": "zipated",
+    "Introduction": "崩坏3乐土攻略查询插件。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "zipated/Elysian-Realm-plugin"
+    },
+    "PluginName": "崩坏三乐土插件",
+    "PackageName": "No"
+  },
+  "ZZZ-Plugin": {
+    "Author": "ZZZure & 社区",
+    "Introduction": "绝区零插件。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "ZZZure/ZZZ-Plugin"
+    },
+    "PluginName": "绝区零插件",
+    "PackageName": "zzz-plugin"
+  },
+  "xiaoyao-cvs-plugin": {
+    "Author": "逍遥",
+    "Introduction": "原神图鉴插件。",
+    "Repository": {
+      "Gitee": "Ctrlcvs/xiaoyao-cvs-plugin",
+      "Github": "Ctrlcvs/xiaoyao-cvs-plugin"
+    },
+    "PluginName": "逍遥插件",
+    "PackageName": "No"
+  },
+  "waves-plugin": {
+    "Author": "二枣子",
+    "Introduction": "鸣潮游戏数据查询插件。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "erzaozi/waves-plugin"
+    },
+    "PluginName": "鸣潮插件",
+    "PackageName": "waves-plugin"
+  },
+  "skland-plugin": {
+    "Author": "二枣子 & 0卡苏打水",
+    "Introduction": "明日方舟每日签到，理智提醒插件。",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "erzaozi/skland-plugin"
+    },
+    "PluginName": "明日方舟插件",
+    "PackageName": "skland-plugin"
+  },
+  "1999-plugin": {
+    "Author": "Fantasy",
+    "Introduction": "重返未来：1999相关功能（图鉴，分析，娱乐，查询）。",
+    "Repository": {
+      "Gitee": "fantasy-hx/1999-plugin",
+      "Github": "No"
+    },
+    "PluginName": "重返未来：1999 插件",
+    "PackageName": "1999-plugin"
+  },
+  "Tlon-Sky": {
+    "Author": "Tloml-Starry",
+    "Introduction": "提供光遇相关功能插件。",
+    "Repository": {
+      "Gitee": "Tloml-Starry/Tlon-Sky",
+      "Github": "No"
+    },
+    "PluginName": "光遇插件",
+    "PackageName": "No"
+  },
+  "Yunzai-Kuro-Plugin": {
+    "Author": "Tloml-Starry",
+    "Introduction": "提供库洛游戏(战双&鸣潮)相关功能插件。",
+    "Repository": {
+      "Gitee": "TomyJan/Yunzai-Kuro-Plugin",
+      "Github": "TomyJan/Yunzai-Kuro-Plugin"
+    },
+    "PluginName": "库洛插件",
+    "PackageName": "Yunzai-Kuro-Plugin"
   }
 }

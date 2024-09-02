@@ -133,11 +133,6 @@ YN)
   InstallNextSystem
   InstallNextGenshin
   InstallMiaoPlugin
-  cd yunzai
-  yarn add  react-puppeteer -W
-  yarn install
-  Device
-  cd ..
   YarnPackage
   Device
   defineConfig
