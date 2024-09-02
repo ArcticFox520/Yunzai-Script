@@ -4,7 +4,7 @@ export AFYZHOME="AF_HOME_Path"
 cd $AFYZHOME/Manage
 if [ ! -z $1 ]
 then
-  bash $AFYZHOME/Manage/Command $@
+  bash Command $@
   exit
 fi
 bash Main "$@"
