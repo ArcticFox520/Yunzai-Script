@@ -13,7 +13,7 @@ fi
 LocalVersion="$(cat $AFYZHOME/version)"
 if [ ! -z "${CloudVersion}" ]
 then
-  if [ ${LocalVersion} != ${CloudVersion} ]
+  if [ "${LocalVersion}" != "${CloudVersion}" ]
   then
     afyz up
     exit
