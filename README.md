@@ -56,8 +56,8 @@
 - [备用文档③](https://cloudflare.docs.arcticfox.top)
 
 ## LICENSE
-- [MIT License](https://github.com/ArcticFox520/Yunzai-Next-Script/blob/main/LICENSE)
--  [用户协议](https://github.com/ArcticFox520/Yunzai-Next-Script/blob/main/用户协议.txt)
+- [MIT License](https://github.com/ArcticFox520/Yunzai-Script/blob/main/LICENSE)
+-  [用户协议](https://github.com/ArcticFox520/Yunzai-Script/blob/main/用户协议.txt)
 > 注: 如果 MIT License 开源协议 和 本项目 用户协议 `有冲突部分`，以本项目用户协议为准。
 
 ---
