@@ -3,22 +3,6 @@ if [ -e $AFYZHOME/config ]
 then
   source $AFYZHOME/config
 fi
-VersionURL="https://raw.githubusercontent.com/ArcticFox520/Yunzai-Script/main/version"
-if CheckNetwork
-then
-  CloudVersion="$(curl -sL https://mirror.ghproxy.com/${VersionURL})"
-else
-  CloudVersion="$(curl -sL ${VersionURL})"
-fi
-LocalVersion="$(cat $AFYZHOME/version)"
-if [ ! -z "${CloudVersion}" ]
-then
-  if [ "${LocalVersion}" != "${CloudVersion}" ]
-  then
-    afyz up
-    exit
-  fi
-fi
 case $1 in
 yn)
   if CheckInstall YN
@@ -139,7 +123,6 @@ SignApi)
     echo -e ${red}错误 ${cyan}文件不存在${background}
     exit
   fi
-  OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
   OldSignApiAddr="$(grep sign_api_addr ${ConfigFile})"
   NewSignApiAddr=$(echo ${NewSignApiAddr} | sed "s|sign_api_addr: ||g")
   sed -i "s|${OldSignApiAddr}|sign_api_addr: ${NewSignApiAddr}|g" ${ConfigFile}
