@@ -3,6 +3,22 @@ if [ -e $AFYZHOME/config ]
 then
   source $AFYZHOME/config
 fi
+VersionURL="https://raw.githubusercontent.com/ArcticFox520/Yunzai-Script/main/version"
+if CheckNetwork
+then
+  CloudVersion="$(curl -sL https://mirror.ghproxy.com/${VersionURL})"
+else
+  CloudVersion="$(curl -sL ${VersionURL})"
+fi
+LocalVersion="$(cat $AFYZHOME/version)"
+if [ ! -z "${CloudVersion}" ]
+then
+  if [ ${LocalVersion} != ${CloudVersion} ]
+  then
+    afyz up
+    exit
+  fi
+fi
 case $1 in
 yn)
   if CheckInstall YN
