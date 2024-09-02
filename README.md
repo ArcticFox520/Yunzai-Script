@@ -1,5 +1,5 @@
-# 🍥 Yunzai-Next Script
-> 这是一个适用于Yunzai-Next自动化部署及管理脚本。
+# 🍥 Yunzai Script
+> 这是一个适用于Yunzai-Next,Miao-Yunza,TRSS-Yunzai的自动化部署及管理脚本。
 ---
 > 宗旨: 化繁为简、轻装上阵。
 
