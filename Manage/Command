@@ -111,12 +111,7 @@ log)
   LogBot ${BotName} ${COMMAND} ${Pm2Name}
   ;;
 SignApi)
-  if [ -z "$4" ]
-  then
-    NewSignApiAddr="$3"
-  else
-    NewSignApiAddr="$3&ver=$4"
-  fi
+  NewSignApiAddr="$3"
   ConfigFile="config/config/bot.yaml"
   if [ ! -e ${ConfigFile} ]
   then
