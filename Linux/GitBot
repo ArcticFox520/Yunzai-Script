@@ -30,7 +30,7 @@ function InstallTRSSYunzai(){
 function InstallYunzaiNext(){
   if [ ! -e Yunzai-Next/package.json ]
   then
-    if ! gitclone https://github.com/yunzai-org/yunzai-next.git Yunzai-Next
+    if ! gitclone https://github.com/yunzai-org/yunzai-bot Yunzai-Bot
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -106,7 +106,7 @@ function YarnPackage(){
     exit 1
   fi
   echo -en ${yellow}正在初始化${background}
-  yarn start
+  yarn 
   sleep 3s
   yarn stop
   rm -rf ~/.pm2/logs/*.log
@@ -115,19 +115,6 @@ function YarnPackage(){
 }
 function Device(){
   cat $AFYZHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
-}
-function defineConfig(){
-echo '{
-  "defineConfig": {
-    "applications": [
-      "yz-system"
-    ],
-    "middlewares": [
-      "yunzai-mys/runtime",
-      "yunzai-mys/message"
-    ]
-  }
-}' > yunzai.config.json
 }
 #此处仅为传参所用，如果开发者不满意此缩写，可联系ArcticFox520更改。
 case $1 in
@@ -139,7 +126,6 @@ YN)
   InstallMiaoPlugin
   YarnPackage
   Device
-  defineConfig
 ;;
 MZ)
   InstallMiaoYunzai

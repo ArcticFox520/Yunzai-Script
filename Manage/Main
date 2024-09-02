@@ -1,4 +1,5 @@
 #!/bin/env bash
+cd $HOME
 source ../config
 
 if ping -c 1 api.arcticfox.top 2>&1 > /dev/null
@@ -242,9 +243,9 @@ Number=$($(TUISoftware) \
 --title "AF-Script" \
 --menu "$(MenuTips)" \
 $(MenuSize) \
-"1" "Yunzai-Next" \
-"2" "Miao-Yunzai" \
-"3" "TRSS-Yunzai" \
+"1" "Miao-Yunzai" \
+"2" "TRSS-Yunzai" \
+"3" "Yunzai-Bot" \
 "4" " 进入BASH " \
 "0" " 退出脚本 " \
 3>&1 1>&2 2>&3)
@@ -254,34 +255,6 @@ then
 fi
 case ${Number} in
   1)
-    if CheckInstall YN
-    then
-      TitleText="AF-YZ-Next"
-      BotName="Yunzai-Next"
-      COMMAND="YZ-NEXT"
-      StartCommand="node src/main"
-      Pm2Name="yunzai-next"
-      SecondMenu
-    else
-      if ($(TUISoftware) --title "AF-Script"  \
-      --yes-button "安装" \
-      --no-button "返回" \
-      --yesno "Yunzai-Next [未安装]\n是否立刻开始安装" \
-      $(MsgboxSize))
-      then
-        Install YN
-        TitleText="AF-YZ-Next"
-        BotName="Yunzai-Next"
-        COMMAND="YZ-NEXT"
-        StartCommand="node src/main"
-        Pm2Name="yunzai-next"
-        SecondMenu
-      else
-        MainMenu
-      fi
-    fi
-    ;;
-  2)
     if CheckInstall MZ
     then
       TitleText="AF-MZ"
@@ -309,7 +282,7 @@ case ${Number} in
       fi
     fi
   ;;
-  3)
+  2)
     if CheckInstall TZ
     then
       TitleText="AF-TZ"
@@ -337,6 +310,38 @@ case ${Number} in
       fi
     fi
   ;;
+  3)
+    $(TUISoftware) --title "${TitleText}" \
+    --msgbox "Yunzai-Next停止安装 恢复时间看我心情 🌿" \
+    $(MsgboxSize)
+    SecondMenu
+    exit
+    if CheckInstall YN
+    then
+      TitleText="AF-YZ-Next"
+      BotName="Yunzai-Next"
+      COMMAND="YZ-NEXT"
+      StartCommand="node src/main"
+      Pm2Name="yunzai-next"
+      SecondMenu
+    esle
+      if ($(TUISoftware) --title "AF-Script"  \
+      --yes-button "安装" \
+      --no-button "返回" \
+      --yesno "Yunzai-Bot [未安装]\n是否立刻开始安装" \
+      $(MsgboxSize))
+      then
+        Install YN
+        TitleText="AF-YZ-Next"
+        BotName="Yunzai-Next"
+        COMMAND="YZ-NEXT"
+        StartCommand="node src/main"
+        Pm2Name="yunzai-next"
+        SecondMenu
+      else
+        MainMenu
+      fi
+    fi   
   4)
     exec bash -i
   ;;
