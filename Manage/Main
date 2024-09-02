@@ -240,6 +240,7 @@ $(MenuSize) \
 "1" "Yunzai-Next" \
 "2" "Miao-Yunzai" \
 "3" "TRSS-Yunzai" \
+"4" " 进入BASH "
 "0" " 退出脚本 " \
 3>&1 1>&2 2>&3)
 if [ $? == 1 ]
@@ -330,6 +331,9 @@ case ${Number} in
         MainMenu
       fi
     fi
+  ;;
+  4)
+    exec bash -i
   ;;
   0)
     return 5
