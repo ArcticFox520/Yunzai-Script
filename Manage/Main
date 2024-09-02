@@ -331,7 +331,6 @@ case ${Number} in
     $(TUISoftware) --title "${TitleText}" \
     --msgbox "Yunzai-Next停止安装 恢复时间看我心情 🌿" \
     $(MsgboxSize)
-    SecondMenu
     exit
     if CheckInstall YN
     then
