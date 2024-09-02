@@ -100,7 +100,11 @@ function YarnPackage(){
     exit 1
   fi
   echo -e ${yellow}正在编译${background}
-  yarn build
+  if ! yarn build
+  then
+    echo -e ${red}错误${background}
+    exit 1
+  fi
   echo -en ${yellow}正在初始化${background}
   yarn start
   sleep 3s

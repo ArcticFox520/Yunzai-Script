@@ -35,8 +35,8 @@ tz)
   fi
 ;;
 esac
-case $1 in
 CheckInstall $1
+case $1 in
 YN|Yunzai-Next)
   BotName="Yunzai-Next"
   COMMAND="YZ-NEXT"
