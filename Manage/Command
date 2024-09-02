@@ -3,8 +3,40 @@ if [ -e $AFYZHOME/config ]
 then
   source $AFYZHOME/config
 fi
-CheckInstall $1
 case $1 in
+yn)
+  if CheckInstall YN
+  then
+    exec bash -i
+    exit
+  else
+    echo -e ${red}未安装 ${background}Yunzai-Next${background}
+    exit
+  fi
+;;
+mz)
+  if CheckInstall MZ
+  then
+    exec bash -i
+    exit
+  else
+    echo -e ${red}未安装 ${background}Miao-Yunzai${background}
+    exit
+  fi
+;;
+tz)
+  if CheckInstall TZ
+  then
+    exec bash -i
+    exit
+  else
+    echo -e ${red}未安装 ${background}TRSS-Yunzai${background}
+    exit
+  fi
+;;
+esac
+case $1 in
+CheckInstall $1
 YN|Yunzai-Next)
   BotName="Yunzai-Next"
   COMMAND="YZ-NEXT"
@@ -75,4 +107,6 @@ SignApi)
   API=$(grep sign_api_addr ${ConfigFile} | sed "s|sign_api_addr: ||g")
   echo -e ${green}签名API已经修改为 ${cyan}${API}${background}
   ;;
+up)
+  
 esac
