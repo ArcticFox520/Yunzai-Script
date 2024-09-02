@@ -3,6 +3,7 @@ source $AFYZHOME/config
 TitleText=$1
 function CheckFile(){
 if [ ! -e $1 ]
+then
   $(TUISoftware) --title "${TitleText}" \
   --msgbox "文件不存在" \
   $(MsgboxSize)
