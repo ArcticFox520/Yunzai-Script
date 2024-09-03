@@ -200,12 +200,12 @@ then
   if ${pkg} install --registry=${NPMMirror}
   then
     echo -e ${green}安装成功${background}
+    cd ../..
     return 0
-    cd ..
   else
     echo -e ${red}安装失败${background}
+    cd ../..
     return 1
-    cd ..
   fi
 fi
 }
@@ -245,10 +245,10 @@ then
     gitclone ${GitURL} plugins/${i}
     if DependenciesInstall ${i}
     then
-      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
+      echo -en ${cyan}插件 ${green}安装完成${background}
       echo
     else
-      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
+      echo -en ${cyan}插件 ${red}安装错误${background}
       echo
     fi
   done
@@ -389,7 +389,7 @@ then
   then
     for i in ${PluginNameAll}
     do
-      echo -e ${yellow}正在删除 ${cyan}${PluginNameAll}${background}
+      echo -e ${yellow}正在删除 ${cyan}${i}${background}
       rm -rf plugins/${i} 2>&1 > /dev/null
       rm -rf plugins/${i} 2>&1 > /dev/null
     done
