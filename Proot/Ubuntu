@@ -14,9 +14,10 @@ background="\033[0m"
 echo
 Linux="ubuntu"
 Version="jammy"
-
-if [ "$(uname -o)" = "Android" ];then
+RootfsName="rootfs.tar.xz"
+if [ ! "$(uname -o)" = "Android" ];then
     echo -e ${red}此脚本禁止在Linux中运行${background}
+    exit
 fi
 
 function gitclone(){
@@ -79,11 +80,6 @@ do
   esac
 done
 }
-
-if [ ! "$(uname -o)" = "Android" ]
-then
-	echo -e ${blue}[${red}*${blue}] ${cyan}错误 ${yellow}此脚本仅能够在termux运行${background}
-fi
 
 if ping -c 1 google.com 2>&1 > /dev/null
 then

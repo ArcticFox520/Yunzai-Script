@@ -668,5 +668,15 @@
     },
     "PluginName": "库洛插件",
     "PackageName": "Yunzai-Kuro-Plugin"
+  },
+  "yenai-plugin": {
+    "Author": "椰奶",
+    "Introduction": "提供对Bot的一些便捷操作。",
+    "Repository": {
+      "Gitee": "yeyang52/yenai-plugin",
+      "Github": "yeyang52/yenai-plugin"
+    },
+    "PluginName": "椰奶插件",
+    "PackageName": "yenai-plguin"
   }
 }

@@ -3,194 +3,6 @@ source $AFYZHOME/config
 PluginListFile="$AFYZHOME/Manage/Plugin.json"
 TitleText="AF-Plugin"
 
-function InstallGitPlugin(){
-unset PluginNameAll LocalPluginGitList LocalPackageNameList InstalledPlugin Options j i
-function getPluginList(){
-CloudPluginNameList="$(jq -r 'keys[]' ${PluginListFile})"
-LocalPluginNameList="$(ls plugins -I example -I other -I system)"
-for i in ${LocalPluginNameList}
-do
-  if [ -e plugins/${i}/.git/config ]
-  then
-    j="$(grep url ./plugins/${i}/.git/config | sed 's|url =||g')"
-  fi
-  LocalPluginGitList="${j} ${LocalPackageNameList}"
-done
-for i in ${LocalPluginNameList}
-do
-  if [ -e plugins/${i}/package.json ]
-  then
-    j="$(jq -r '.name' plugins/${i}/package.json)"
-  fi
-  LocalPackageNameList="${j} ${LocalPackageNameList}"
-done
-unset i
-n=0
-for i in ${CloudPluginNameList}
-do
-  n=$((${n}+1))
-  echo -en '\r'${yellow}正在处理插件数据 ${green}已处理 ${cyan}${n} 项${background}
-  CloudPluginGitee=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Gitee' ${PluginListFile}"))
-  CloudPluginGithub=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Github' ${PluginListFile}"))
-  CloudPackageName=$(eval $(echo "jq -r '.[\"${i}\"].PackageName' ${PluginListFile}"))
-  if [ -d plugins/${i} ]
-  then
-    InstallationStatus="[已安装]"
-    InstalledPluginList="${InstalledPlugin} ${i}"
-  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGitee}
-  then
-    InstallationStatus="[已安装]"
-    InstalledPluginList="${InstalledPlugin} ${i}"
-  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGithub}
-  then
-    InstallationStatus="[已安装]"
-    InstalledPluginList="${InstalledPlugin} ${i}"
-  elif echo ${LocalPackageNameList} | grep -q ${CloudPackageName}
-  then
-    InstallationStatus="[已安装]"
-    InstalledPluginList="${InstalledPlugin} ${i}" 
-  else
-    InstallationStatus="[未安装]"
-  fi
-  Options="${Options} ${i} ${InstallationStatus} ${OFF}"
-done
-echo
-}
-function getGitURL(){
-j=$1
-if CheckNetwork
-then
-  GitSite=Gitee
-else
-  GitSite=Github
-fi
-local Git=$(eval $(echo "jq -r '.[\"${j}\"].Repository.${GitSite}' ${PluginListFile}"))
-if [ ${Git} == No ]
-then
-  case ${GitSite} in
-    Gitee)
-      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
-    ;;
-    Github)
-      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
-    ;;
-  esac
-else
-  case ${GitSite} in
-    Gitee)
-      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
-    ;;
-    Github)
-      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
-    ;;
-  esac
-fi
-echo ${GitURL}
-}
-function DependenciesInstall(){
-if CheckNetwork
-then
-  NPMMirror="https://registry.npmmirror.com"
-else
-  NPMMirror="https://registry.npmjs.org"
-fi
-case $(jq '.name' package.json) in
-yunzai-next)
-  pkg=yarn
-  ;;
-*)
-  pkg=pnpm
-  ;;
-esac
-if [ -e plugins/${i}/package.json ]
-then
-  cd plugins/${i}
-  echo -e ${yellow}正在安装 ${cyan}插件依赖${background}
-  if ${pkg} install --registry=${NPMMirror}
-  then
-    echo -e ${green}安装成功${background}
-    return 0
-  else
-    echo -e ${red}安装失败${background}
-    return 1
-  fi
-  cd ..
-fi
-}
-function gitClonePlugin(){
-if [ -z "${Options}" ]
-then
-  getPluginList
-fi
-PluginNameAll=$($(TUISoftware) \
---title "${TitleText}" \
---${ChecklistMenu} "${Tips}" \
-$(MenuSize) \
-${Options} \
-3>&1 1>&2 2>&3)
-if [ $? == 1 ]
-then
-  return 0
-fi
-PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
-if [ -z "${PluginNameAll}" ]
-then
-  return 0
-fi
-if echo ${MultipleChoice} | grep -q true
-then
-  for i in ${PluginNameAll}
-  do
-    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
-    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
-    GitURL=$(getGitURL ${i})
-    echo
-    echo -e ${white}==================================${background}
-    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
-    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
-    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
-    echo -e ${white}==================================${background}
-    gitclone ${GitURL} plugins/${i}
-    DependenciesInstall
-  done
-  echo -en ${cyan}命令执行完成 ${cyan}回车返回${background};read
-  echo
-elif echo ${MultipleChoice} | grep -q false
-then
-  i=${PluginNameAll}
-  PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
-  Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
-  Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
-  GitURL=$(getGitURL ${i})
-  if ($(TUISoftware) --title "${TitleText}"  \
-  --yes-button "安装" \
-  --no-button "返回" \
-  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
-  $(MsgboxSize))
-  then
-    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
-    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
-    GitURL=$(getGitURL ${i})
-    echo
-    echo -e ${white}==================================${background}
-    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
-    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
-    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
-    echo -e ${white}==================================${background}
-    gitclone ${GitURL} plugins/${i}
-    if DependenciesInstall
-    then
-      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
-      echo
-    else
-      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
-      echo
-    fi
-  else
-    gitClonePlugin
-  fi
-fi
-}
 function gitClonePluginSimple(){
 unset Options i j n
 CloudPluginNameList="$(jq -r 'keys[]' ${PluginListFile})"
@@ -277,6 +89,204 @@ then
     fi
   else
     gitClonePluginSimple
+  fi
+fi
+}
+
+function InstallGitPlugin(){
+unset PluginNameAll LocalPluginGitList LocalPackageNameList InstalledPlugin Options j i
+function getPluginList(){
+CloudPluginNameList="$(jq -r 'keys[]' ${PluginListFile})"
+LocalPluginNameList="$(ls plugins -I example -I other -I system)"
+for i in ${LocalPluginNameList}
+do
+  if [ -e plugins/${i}/.git/config ]
+  then
+    j="$(grep url ./plugins/${i}/.git/config | sed 's|url =||g')"
+  fi
+  LocalPluginGitList="${j} ${LocalPackageNameList}"
+done
+for i in ${LocalPluginNameList}
+do
+  if [ -e plugins/${i}/package.json ]
+  then
+    j="$(jq -r '.name' plugins/${i}/package.json)"
+  fi
+  LocalPackageNameList="${j} ${LocalPackageNameList}"
+done
+unset i
+n=0
+for i in ${CloudPluginNameList}
+do
+  n=$((${n}+1))
+  echo -en '\r'${yellow}正在处理插件数据 ${green}已处理 ${cyan}${n} 项${background}
+  CloudPluginGitee=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Gitee' ${PluginListFile}"))
+  CloudPluginGithub=$(eval $(echo "jq -r '.[\"${i}\"].Repository.Github' ${PluginListFile}"))
+  CloudPackageName=$(eval $(echo "jq -r '.[\"${i}\"].PackageName' ${PluginListFile}"))
+  if [ -d plugins/${i} ]
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGitee}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPluginGitList} | grep -q ${CloudPluginGithub}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}"
+  elif echo ${LocalPackageNameList} | grep -q ${CloudPackageName}
+  then
+    InstallationStatus="[已安装]"
+    InstalledPluginList="${InstalledPlugin} ${i}" 
+  else
+    InstallationStatus="[未安装]"
+  fi
+  Options="${Options} ${i} ${InstallationStatus} ${OFF}"
+done
+echo
+}
+function getGitURL(){
+j=$1
+if CheckNetwork
+then
+  GitSite=Gitee
+else
+  GitSite=Github
+fi
+local Git=$(eval $(echo "jq -r '.[\"${j}\"].Repository.${GitSite}' ${PluginListFile}"))
+if [ ${Git} == No ]
+then
+  case ${GitSite} in
+    Gitee)
+      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
+    ;;
+    Github)
+      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
+    ;;
+  esac
+else
+  case ${GitSite} in
+    Gitee)
+      GitURL="https://gitee.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Gitee' ${PluginListFile}"))"
+    ;;
+    Github)
+      GitURL="https://github.com/$(eval $(echo "jq -r '.[\"${j}\"].Repository.Github' ${PluginListFile}"))"
+    ;;
+  esac
+fi
+echo ${GitURL}
+}
+function DependenciesInstall(){
+name="$1"
+if CheckNetwork
+then
+  NPMMirror="https://registry.npmmirror.com"
+else
+  NPMMirror="https://registry.npmjs.org"
+fi
+case $(jq '.name' package.json) in
+yunzai-next)
+  pkg=yarn
+  ;;
+*)
+  pkg=pnpm
+  ;;
+esac
+if [ -e plugins/${name}/package.json ]
+then
+  cd plugins/${name}
+  echo -e ${yellow}正在安装 ${cyan}插件依赖${background}
+  if ${pkg} install --registry=${NPMMirror}
+  then
+    echo -e ${green}安装成功${background}
+    return 0
+    cd ..
+  else
+    echo -e ${red}安装失败${background}
+    return 1
+    cd ..
+  fi
+fi
+}
+function gitClonePlugin(){
+if [ -z "${Options}" ]
+then
+  getPluginList
+fi
+PluginNameAll=$($(TUISoftware) \
+--title "${TitleText}" \
+--${ChecklistMenu} "${Tips}" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ $? == 1 ]
+then
+  return 0
+fi
+PluginNameAll=$(echo ${PluginNameAll} | sed 's|"||g')
+if [ -z "${PluginNameAll}" ]
+then
+  return 0
+fi
+if echo ${MultipleChoice} | grep -q true
+then
+  for i in ${PluginNameAll}
+  do
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    if DependenciesInstall ${i}
+    then
+      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
+      echo
+    fi
+  done
+  echo -en ${cyan}命令执行完成 ${cyan}回车返回${background};read
+  echo
+elif echo ${MultipleChoice} | grep -q false
+then
+  i=${PluginNameAll}
+  PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+  Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+  Introduction="$(eval $(echo "jq -r '.[\"${i}\"].Introduction' ${PluginListFile}"))"
+  GitURL=$(getGitURL ${i})
+  if ($(TUISoftware) --title "${TitleText}"  \
+  --yes-button "安装" \
+  --no-button "返回" \
+  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
+  $(MsgboxSize))
+  then
+    PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"
+    Author="$(eval $(echo "jq -r '.[\"${i}\"].Author' ${PluginListFile}"))"
+    GitURL=$(getGitURL ${i})
+    echo
+    echo -e ${white}==================================${background}
+    echo -e ${cyan}正在安装: ${yellow}${PluginName} ${background}
+    echo -e ${cyan}插件作者: ${yellow}${Author} ${background}
+    echo -e ${cyan}插件仓库: ${yellow}${GitURL} ${background}
+    echo -e ${white}==================================${background}
+    gitclone ${GitURL} plugins/${i}
+    if DependenciesInstall ${i}
+    then
+      echo -en ${cyan}插件 ${green}安装完成 ${cyan}回车返回${background};read
+      echo
+    else
+      echo -en ${cyan}插件 ${red}安装错误 ${cyan}回车返回${background};read
+      echo
+    fi
+  else
+    gitClonePlugin
   fi
 fi
 }
