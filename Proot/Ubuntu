@@ -15,6 +15,10 @@ echo
 Linux="ubuntu"
 Version="jammy"
 
+if [ "$(uname -o)" = "Android" ];then
+    echo -e ${red}此脚本禁止在Linux中运行${background}
+fi
+
 function gitclone(){
 if echo $1 | grep -q gitee
 then

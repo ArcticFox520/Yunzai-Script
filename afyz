@@ -1,5 +1,5 @@
 #!/bin/env bash
-export Path="$(pwd)"
+export Path=$HOME
 export AFYZHOME="AF_HOME_Path"
 cd $AFYZHOME/Manage
 if [ ! -z $1 ]
