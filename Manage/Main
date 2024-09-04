@@ -336,11 +336,11 @@ case ${Number} in
       StartCommand="node src/main"
       Pm2Name="yunzai-next"
       SecondMenu
-    esle
+    else
       if ($(TUISoftware) --title "AF-Script"  \
       --yes-button "安装" \
       --no-button "返回" \
-      --yesno "Yunzai-Bot [未安装]\n是否立刻开始安装" \
+      --yesno "Yunzai-Next [未安装]\n是否立刻开始安装" \
       $(MsgboxSize))
       then
         Install YN

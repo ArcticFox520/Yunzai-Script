@@ -650,7 +650,7 @@ function CheckPath(){
 function CheckInstall(){
   case $1 in
   YN|Yunzai-Next)
-    if CheckPath Yunzai-Bot yunzai-bot
+    if CheckPath Yunzai-Next Yunzai-Bot yunzai-bot yunzaijs
     then
       return 0
     else
