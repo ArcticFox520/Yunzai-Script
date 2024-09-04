@@ -613,7 +613,7 @@ function START(){
     if ! $(pm2 list 2>&1 | grep $2 | grep -q stopped)
     then
       pm2 delete $2 > /dev/null 2>&1
-      START $1 $2
+      START "$1" $2
     fi
   fi
 }
