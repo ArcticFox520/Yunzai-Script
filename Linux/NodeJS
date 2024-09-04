@@ -28,17 +28,19 @@ if CheckNetwork
 then
   NodeJSURL="https://registry.npmmirror.com/-/binary/node/latest-iron/node-${NodeVersion}-linux-$(Arch).tar.xz"
 else
-  NodeJSURL="https://nodejs.org/dist/latest-iron/node-${NodeVersion}-linux-$(Arch).tar.gz"
+  NodeJSURL="https://nodejs.org/dist/latest-iron/node-${NodeVersion}-linux-$(Arch).tar.xz"
 fi
-if Download NodeJS.tar.xz ${NodeJSURL}
+if ! Download NodeJS.tar.xz ${NodeJSURL}
 then
-  echo -e ${yellow}正在解压 ${cyan}NodeJS.tar.xz${background}
-else
-  echo -e ${red}解压失败${background}
+  echo -e ${red}下载失败${background}
   ErrorReturn
 fi
 mkdir NodeJS
-pv NodeJS.tar.xz | tar -Jxf - -C NodeJS
+if ! pv NodeJS.tar.xz | tar -Jxf - -C NodeJS
+then
+  echo -e ${red}解压失败${background}
+  ErrorReturn
+fi
 rm -rvf NodeJS.tar.xz
 rm -rf /usr/local/NodeJS > /dev/null 2>&1
 mv NodeJS/$(ls NodeJS) /usr/local/NodeJS
