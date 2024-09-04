@@ -196,6 +196,7 @@ read
 }
 
 function SelectRegion(){
+function Tips(){
 echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
  ———————————————————
  ${cyan}请问您的设备所在位置是? 
@@ -203,7 +204,8 @@ echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
     ${green}2${white}. 其他位置 ${background}
  ———————————————————
  ${cyan}请输入数字 ${white}[1-2]:${background} "
- read num
+}
+ read -p "$(Tips)" num
  case ${num} in
  1)
   return 0
@@ -229,12 +231,17 @@ then
     return 1
   fi
 else
-  if echo ${IpinfoIo} | jq .country | grep -q "CN"
+  if echo ${IpinfoIo} | grep -q error
   then
-    return 0
-  else
     token=$(echo -e ${token})
     if curl -sL ipinfo.io/json?token=${token} | jq .country | grep -q "CN"
+    then
+      return 0
+    else
+      return 1
+    fi
+  else
+    if echo ${IpinfoIo} | jq .country | grep -q "CN"
     then
       return 0
     else
