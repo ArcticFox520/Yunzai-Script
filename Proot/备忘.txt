@@ -1,4 +1,0 @@
-busybox
-https://busybox.net/downloads/binaries/
-proot
-https://github.com/proot-me/proot/releases

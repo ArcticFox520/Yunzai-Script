@@ -10,7 +10,7 @@ fi
 function InstallMiaoYunzai(){
   if [ ! -e Miao-Yunzai/package.json ]
   then
-    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/Miao-Yunzai.git Miao-Yunzai
+    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/Miao-Yunzai Miao-Yunzai
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -30,7 +30,7 @@ function InstallTRSSYunzai(){
 function InstallYunzaiNext(){
   if [ ! -e Yunzai-Next/package.json ]
   then
-    if ! gitclone https://github.com/yunzai-org/yunzai-bot Yunzai-Bot
+    if ! gitclone https://github.com/yunzai-org/yunzai-bot Yunzai-Next
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -40,7 +40,7 @@ function InstallYunzaiNext(){
 function InstallMiaoPlugin(){
   if [ ! -e plugins/miao-plugin/index.js ]
   then
-    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/miao-plugin.git plugins/miao-plugin
+    if ! git clone --depth=1 https://${Git}.com/yoimiya-kokomi/miao-plugin plugins/miao-plugin
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -50,7 +50,7 @@ function InstallMiaoPlugin(){
 function InstallTRSSGenshin(){
   if [ ! -e plugins/genshin/index.js ]
   then
-    if ! git clone --depth=1 https://${Git}.com/TimeRainStarSky/Yunzai-genshin.git plugins/genshin
+    if ! git clone --depth=1 https://${Git}.com/TimeRainStarSky/Yunzai-genshin plugins/genshin
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -60,7 +60,7 @@ function InstallTRSSGenshin(){
 function InstallNextGenshin(){
   if [ ! -e plugins/genshin/README.md ]
   then
-    if ! gitclone https://github.com/yunzai-org/genshin.git plugins/genshin
+    if ! gitclone https://github.com/yunzai-org/genshin plugins/genshin
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -70,7 +70,7 @@ function InstallNextGenshin(){
 function InstallNextSystem(){
   if [ ! -e plugins/genshin/README.md ]
   then
-    if ! gitclone https://github.com/yunzai-org/system.git plugins/system
+    if ! gitclone https://github.com/yunzai-org/system plugins/system
     then
       echo -e ${red}安装失败${background}
       exit 1
@@ -98,15 +98,9 @@ function YarnPackage(){
   then
     echo -e ${red}错误${background}
     exit 1
-  fi
-  echo -e ${yellow}正在编译${background}
-  if ! yarn build
-  then
-    echo -e ${red}错误${background}
-    exit 1
-  fi
+  fi  
   echo -en ${yellow}正在初始化${background}
-  yarn 
+  yarn start
   sleep 3s
   yarn stop
   rm -rf ~/.pm2/logs/*.log

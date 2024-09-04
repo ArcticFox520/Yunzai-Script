@@ -262,7 +262,7 @@ Number=$($(TUISoftware) \
 $(MenuSize) \
 "1" "Miao-Yunzai" \
 "2" "TRSS-Yunzai" \
-"3" "Yunzai-Bot" \
+"3" "Yunzai-Next" \
 "4" " 进入BASH " \
 "0" " 退出脚本 " \
 3>&1 1>&2 2>&3)
@@ -328,10 +328,6 @@ case ${Number} in
     fi
   ;;
   3)
-    $(TUISoftware) --title "${TitleText}" \
-    --msgbox "Yunzai-Next停止安装 恢复时间看我心情 🌿" \
-    $(MsgboxSize)
-    exit
     if CheckInstall YN
     then
       TitleText="AF-YZ-Next"
