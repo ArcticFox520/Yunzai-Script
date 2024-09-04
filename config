@@ -610,7 +610,7 @@ function START(){
   Pm2List=$(pm2 list 2>&1)
   if echo ${Pm2List} | grep -q $2
   then
-    if pm2 list 2>&1 | grep $2 | grep -q online
+    if ! $(pm2 list 2>&1 | grep $2 | grep -q stopped)
     then
       pm2 delete $2 > /dev/null 2>&1
       START $1 $2

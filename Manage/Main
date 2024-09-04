@@ -189,6 +189,7 @@ case ${Number} in
       else
         echo -e ${yellow}${i} ${red}更新失败${background}
       fi
+      cd ../..
     fi
   done
 ;;
