@@ -18,6 +18,7 @@ $(MenuSize) \
 "1" "修改账号" \
 "2" "修改签名" \
 "3" "修改主人" \
+"4" "全量备份" \
 "0" "  返回  " \
 3>&1 1>&2 2>&3)
 case ${Number} in
@@ -127,6 +128,63 @@ case ${Number} in
   else
     exit 0
   fi
+;;
+4)
+  unset Exclude i Options
+  BotFOLDER=$(basename $(pwd))
+  if [ -d /mnt/c ]
+  then
+    for i in $(ls /mnt)
+    do
+      Options="${Options} ${i} 🍥"
+    done
+    FOLDER=$($(TUISoftware) \
+    --title "${TitleText}" \
+    --menu "请问您要将备份文件放置于哪里?" \
+    $(MenuSize) \
+    ${Options} \
+    3>&1 1>&2 2>&3)
+    FilePath="/mnt/${FOLDER}/${BotFOLDER}"
+  else
+    if [ -d /sdcard/Download ]
+    then
+      FilePath="/sdcard/Download/${BotFOLDER}"
+    else
+      FilePath="./${BotFOLDER}"
+    fi
+  fi
+  echo -e ${yellow}正在执行 ${green}git gc${background}
+  git gc
+  for i in $(ls plugins)
+  do
+    if [ -d plugins/${i}/.git ];then
+      cd plugins/${i}
+      git gc
+      cd ../..
+    fi
+  done
+  echo -e ${yellow}执行完成${background}
+  echo -e ${yellow}正在统计 ${green}文件排除项${background}
+  for i in $(ls plugins)
+  do
+    if [ -d plugins/${i}/node_modules ];then
+      Exclude="${Exclude} --exclude=plugins/${i}/node_modules"
+    fi
+  done
+  cd ..
+  Exclude="${Exclude} --exclude=${BotFOLDER}/node_modules"
+  echo -e ${yellow}统计完成${background}
+  if ($(TUISoftware) --title "${TitleText}"  \
+  --yes-button "仅归档" \
+  --no-button "压缩" \
+  --yesno "是否压缩${BotFOLDER} \n这可能会带来额外的时间消耗" \
+  $(MsgboxSize))
+  then
+    tar -cf - ${Exclude} ${BotFOLDER} | pv > ${FilePath}.tar
+  else  
+    tar -cf - ${Exclude} ${BotFOLDER} | pv | xz > ${FilePath}.tar.xz
+  fi
+  echo -e ${green}文件已备份至${FilePath} ${cyan}回车返回${background};read
 ;;
 0)
 exit

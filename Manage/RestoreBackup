@@ -1,0 +1,149 @@
+#!/bin/env bash
+source ../config
+if ! bash ../Install
+then
+  exit 1
+fi
+if ! bash ../Linux/Pnpm
+then
+  exit 1
+fi
+if ! bash ../Linux/Yarn
+then
+  exit 1
+fi
+cd $HOME
+
+function DependenciesInstall(){
+if CheckNetwork
+then
+  NPMMirror="https://registry.npmmirror.com"
+else
+  NPMMirror="https://registry.npmjs.org"
+fi
+case $(jq '.name' package.json) in
+yunzai-next)
+  pkg=yarn
+  ;;
+*)
+  pkg=pnpm
+  ;;
+esac
+for i in $(ls plugins)
+do
+  if [ -e plugins/${i}/package.json ]
+  then
+    cd plugins/${i}
+    echo -e ${yellow}正在安装 ${green}${i}${cyan}插件依赖${background}
+    if ${pkg} install --registry=${NPMMirror}
+    then
+      echo -e ${green}安装成功${background}
+      cd ../..
+    else
+      echo -e ${red}安装失败${background}
+      cd ../..
+    fi
+  fi
+done
+if ${pkg} install --registry=${NPMMirror}
+then
+  echo -e ${green}安装成功${background}
+  cd ../..
+else
+  echo -e ${red}安装失败${background}
+  cd ../..
+fi
+}
+
+unset Options
+if [ -d /mnt/c ]
+then
+  for i in $(ls /mnt)
+  do
+    if [ -e /mnt/${i}/*.tar ]
+    then
+      FolderPath="/mnt/${i}/"
+      for j in $(ls /mnt/${i}/*.tar)
+      do          
+        Options="${Options} ${i} 🍥"
+      done
+    elif [ -e /mnt/${i}/*.tar.xz ]
+    then
+      FolderPath="/mnt/${i}/"
+      for j in $(ls /mnt/${i}/*.tar.xz)
+      do
+        Options="${Options} ${i} 🍥"
+      done
+    else
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "错误: 未能找到备份文件" \
+      $(MsgboxSize)
+      exit
+    fi
+  done
+else
+  if [ -d /sdcard/Download ]
+  then
+    if [ -e /sdcard/Download/*.tar ]
+    then
+      FolderPath="/sdcard/Download/"
+      for j in $(ls /sdcard/Download/*.tar)
+      do          
+        Options="${Options} ${i} 🍥"
+      done
+    elif [ -e /sdcard/Download/*.tar.xz ]
+    then
+      FolderPath="/sdcard/Download/"
+      for j in $(ls /mnt/${i}/*.tar.xz)
+      do          
+        Options="${Options} ${i} 🍥"
+      done
+    fi
+  else
+    if [ -e /*.tar.xz ]
+    then
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "错误 未能找到备份文件\nLinux系统请放置于根目录下\nWindows系统请放置于任意一个盘的根目录下\n安卓系统请放置于下载文件夹(Download)" \
+      $(MsgboxSize)
+      exit
+    fi
+  fi
+fi
+BackupFile=$($(TUISoftware) \
+--title "${TitleText}" \
+--menu "请选择您的备份文件:" \
+$(MenuSize) \
+${Options} \
+3>&1 1>&2 2>&3)
+if [ -e ${BackupFile} ]
+then
+  if [ ${BackupFile} == *.tar ]
+  then
+    FOLDER=$(echo ${BackupFile} | sed "s|${FolderPath}||g" | sed 's|.tar||g')
+    if [ -d ${FOLDER} ]
+    then
+      echo -e ${red}错误 ${black}文件夹已存在${background}
+      exit
+    fi
+    mkdir FOLDER
+    pv ${BackupFile} | tar -xf - -C FOLDER
+    mv FOLDER/$(ls FOLDER) ${FOLDER}
+    rm -rf FOLDER
+    cd ${FOLDER}
+    DependenciesInstall
+  elif [ ${BackupFile} == *.tar.xz ]
+  then
+    FOLDER=$(echo ${BackupFile} | sed 's|.tar.xz||g')
+    if [ -d ${FOLDER} ]
+    then
+      echo -e ${red}错误 ${black}文件夹已存在${background}
+      exit
+    fi
+    mkdir ${FOLDER}
+    pv ${BackupFile} | tar -Jxf - -C ${FOLDER}
+    mv FOLDER/$(ls FOLDER) ${FOLDER}
+    rm -rf FOLDER
+    cd ${FOLDER}
+    DependenciesInstall    
+  fi
+fi
