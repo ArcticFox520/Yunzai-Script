@@ -63,14 +63,14 @@ then
     if [ -e /mnt/${i}/*.tar ]
     then
       FolderPath="/mnt/${i}/"
-      for j in $(ls /mnt/${i}/*.tar)
+      for i in $(ls /mnt/${i}/*.tar)
       do          
         Options="${Options} ${i} 🍥"
       done
     elif [ -e /mnt/${i}/*.tar.xz ]
     then
       FolderPath="/mnt/${i}/"
-      for j in $(ls /mnt/${i}/*.tar.xz)
+      for i in $(ls /mnt/${i}/*.tar.xz)
       do
         Options="${Options} ${i} 🍥"
       done
@@ -87,17 +87,22 @@ else
     if [ -e /sdcard/Download/*.tar ]
     then
       FolderPath="/sdcard/Download/"
-      for j in $(ls /sdcard/Download/*.tar)
+      for i in $(ls /sdcard/Download/*.tar)
       do          
         Options="${Options} ${i} 🍥"
       done
     elif [ -e /sdcard/Download/*.tar.xz ]
     then
       FolderPath="/sdcard/Download/"
-      for j in $(ls /mnt/${i}/*.tar.xz)
+      for i in $(ls /mnt/${i}/*.tar.xz)
       do          
         Options="${Options} ${i} 🍥"
       done
+    else
+      $(TUISoftware) --title "${TitleText}" \
+      --msgbox "错误 未能找到备份文件\nLinux系统请放置于根目录下\nWindows系统请放置于任意一个盘的根目录下\n安卓系统请放置于下载文件夹(Download)" \
+      $(MsgboxSize)
+      exit
     fi
   else
     if [ -e /*.tar.xz ]
@@ -117,8 +122,24 @@ ${Options} \
 3>&1 1>&2 2>&3)
 if [ -e ${BackupFile} ]
 then
-  if [ ${BackupFile} == *.tar ]
+  if echo -e ${BackupFile} | grep -q xz
   then
+    FOLDER=$(echo ${BackupFile} | sed "s|${FolderPath}||g" | sed 's|.tar.xz||g')
+    if [ -d ${FOLDER} ]
+    then
+      echo -e ${red}错误 ${black}文件夹已存在${background}
+      exit
+    fi
+    mkdir FOLDER
+    echo -e ${yellow}开始解压${background}
+    pv ${BackupFile} | tar -Jxf - -C FOLDER
+    echo -e ${yellow}正在移动${background}
+    mv FOLDER/$(ls FOLDER) ${FOLDER}
+    rm -rf FOLDER
+    cd ${FOLDER}
+    DependenciesInstall
+    echo -e ${green}恢复完成 ${cyan}回车返回${background};read
+  else
     FOLDER=$(echo ${BackupFile} | sed "s|${FolderPath}||g" | sed 's|.tar||g')
     if [ -d ${FOLDER} ]
     then
@@ -126,24 +147,15 @@ then
       exit
     fi
     mkdir FOLDER
+    echo -e ${yellow}开始解压${background}
     pv ${BackupFile} | tar -xf - -C FOLDER
+    echo -e ${yellow}正在移动${background}
     mv FOLDER/$(ls FOLDER) ${FOLDER}
     rm -rf FOLDER
     cd ${FOLDER}
     DependenciesInstall
-  elif [ ${BackupFile} == *.tar.xz ]
-  then
-    FOLDER=$(echo ${BackupFile} | sed 's|.tar.xz||g')
-    if [ -d ${FOLDER} ]
-    then
-      echo -e ${red}错误 ${black}文件夹已存在${background}
-      exit
-    fi
-    mkdir ${FOLDER}
-    pv ${BackupFile} | tar -Jxf - -C ${FOLDER}
-    mv FOLDER/$(ls FOLDER) ${FOLDER}
-    rm -rf FOLDER
-    cd ${FOLDER}
-    DependenciesInstall    
+    echo -en ${green}恢复完成 ${cyan}回车返回${background};read
   fi
+  echo -e ${red}错误 ${black}文件不存在${background}
+  exit
 fi

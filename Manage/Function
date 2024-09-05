@@ -180,11 +180,14 @@ case ${Number} in
   --yesno "是否压缩${BotFOLDER} \n这可能会带来额外的时间消耗" \
   $(MsgboxSize))
   then
+    echo -e ${yellow}开始归档${background}
     tar -cf - ${Exclude} ${BotFOLDER} | pv > ${FilePath}.tar
-  else  
+  else
+    echo -e ${yellow}开始压缩${background}
     tar -cf - ${Exclude} ${BotFOLDER} | pv | xz > ${FilePath}.tar.xz
   fi
-  echo -e ${green}文件已备份至${FilePath} ${cyan}回车返回${background};read
+  echo -e ${green}文件已备份至${blue}$(echo ${FilePath} | sed "s|${BotFOLDER}||g")${background}
+  echo -en ${cyan}回车返回${background};read
 ;;
 0)
 exit
