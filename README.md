@@ -68,3 +68,8 @@
 | Miao-Yunzai | [☞GitHub](https://github.com/yoimiya-kokomi/Miao-Yunzai) | [☞Gitee](https://gitee.com/yoimiya-kokomi/Miao-Yunzai) | 喵喵的 Miao-Yunzai |
 | TRSS-Yunzai | [☞GitHub](https://github.com/TimeRainStarSky/Yunzai) | [☞Gitee](https://gitee.com/TimeRainStarSky/Yunzai) | 时雨的TRSS-Yunzai |
 | Yunzai-Next | [☞GitHub](https://github.com/yunzai-org/yunzaijs.git) | 无 | 下一代云崽 | 
+
+## 支持
+| Nickname |
+| :--------: |
+[爱发电](https://afdian.com/a/baihu433) |
