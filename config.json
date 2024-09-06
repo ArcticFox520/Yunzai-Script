@@ -1,3 +1,4 @@
 {
-  "SelectManageSession": "tmux"
+  "SelectManageSession": "tmux",
+  "BotPath": "YourPath"
 }

@@ -84,6 +84,8 @@ function PnpmPackage(){
     echo -e ${red}错误${background}
     exit 1
   fi
+  echo -e ${yellow}正在降级 ${green}Puppeteer${background}
+  pnpm install -w puppeteer@19.8.0
   echo -en ${yellow}正在初始化${background}
   pnpm run start
   sleep 3s
@@ -98,7 +100,7 @@ function YarnPackage(){
   then
     echo -e ${red}错误${background}
     exit 1
-  fi  
+  fi
   echo -en ${yellow}正在初始化${background}
   yarn start
   sleep 3s

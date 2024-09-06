@@ -52,92 +52,13 @@ fi
 
 if [ "$(uname -o)" = "Android" ];then
     Termux
+    echo -e ${red}本脚本禁止在Termux环境运行${background}
     exit
 fi
 
-function Update(){
-if [ -z ${Update} ]
-then
-  Command=$@
-  ${Command}
-  Update=true
-fi
-}
+source config
 
-function CheckNetwork(){
-country=$(curl -sL ipinfo.io  | jq .country)
-if [ -n ${country} ]
-then
-  if echo ${country} | grep -q CN
-  then
-    return 0
-  else
-    return 1
-  fi
-else
-  if SelectRegion
-  then
-    return 0
-  else
-    return 1
-  fi
-fi
-}
 
-function InstallPKG(){
-echo -e ${green}正在安装必要依赖 $1${background}
-if [ $(command -v apt) ]
-then
-  Update apt -y update
-  apt install -y $1
-elif [ $(command -v apt-get) ]
-then
-  Update apt -y update
-  apt-get install -y $1
-elif [ $(command -v pacman) ]
-then
-  Update pacman -Sy
-  pacman -S --noconfirm --needed $1
-elif [ $(command -v dnf) ]
-then
-  Update dnf -y update
-  dnf install -y $1
-elif [ $(command -v yum) ]
-then
-  Update yum -y update
-  yum install -y $1
-elif [ $(command -v apk) ]
-then
-  Update apk update
-  apk add --allow-untrusted --no-cache $1
-elif [ $(command -v zypper) ]
-then
-  Update zypper refresh
-  zypper --non-interactive install $1
-else
-  echo -e ${red}暂不支持的发行版${background}
-  exit
-fi
-}
-
-function CheckPKG(){
-if [ ! -x "$(command -v whiptail)" ] && [ ! -x "$(command -v dialog)" ]
-then
-  PKG="dialog ${PKG}"
-fi
-if [ ! -x "$(command -v git)" ]
-then
-  PKG="git ${PKG}"
-fi
-if [ ! -x "$(command -v jq)" ]
-then
-  PKG="jq ${PKG}"
-fi
-if [ -n ${PKG} ]
-then
-  InstallPKG ${PKG}
-fi
-}
 
 function AlpineEnv(){
   if grep -i -q "Alpine" /etc/os-release
