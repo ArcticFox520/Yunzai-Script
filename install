@@ -56,10 +56,6 @@ if [ "$(uname -o)" = "Android" ];then
     exit
 fi
 
-source config
-
-
-
 function CheckEnv(){
   if [ ! -x /bin/env ]
   then
@@ -93,8 +89,6 @@ ${white}如果您${blue}同意${white}此协议 请${purple}回车${white}继续
 read
 
 CheckEnv
-CheckPKG
-
 AF_HOME_Path="$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"
 chmod +x ${AF_HOME_Path}/afyz
 cp -f ${AF_HOME_Path}/afyz /usr/local/bin/afyz

@@ -659,7 +659,7 @@ function CheckPath(){
       export BotPath="$HOME/fox@bot/${i}"
       cd "$HOME/fox@bot/${i}"
       return 0
-    elif grep -q false
+    elif grep -q true ../config.json
     then
       if $(command -v jq > /dev/null)
       then
