@@ -60,13 +60,10 @@ source config
 
 
 
-function AlpineEnv(){
-  if grep -i -q "Alpine" /etc/os-release
+function CheckEnv(){
+  if [ ! -x /bin/env ]
   then
-    if [ ! -x /bin/env ]
-    then
-      ln -sf $(which env) /bin/env
-    fi
+    ln -sf $(which env) /bin/env
   fi
 }
 
@@ -95,7 +92,7 @@ ${white}————————————————————
 ${white}如果您${blue}同意${white}此协议 请${purple}回车${white}继续。"
 read
 
-AlpineEnv
+CheckEnv
 CheckPKG
 
 AF_HOME_Path="$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"
