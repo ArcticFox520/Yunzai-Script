@@ -20,10 +20,9 @@
     - [x] CentOS 9-Stream
     - [x] CentOS 8-Stream
   - [x] Arch
-  - [x] MSYS2
   - [ ] Docker
 - 次要 Minor
-  - [ ] Manjaro
+  - [x] Manjaro
   - [x] Alpine
   - [ ] OpenSUSE
   - [ ] Fedora

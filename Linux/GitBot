@@ -112,6 +112,9 @@ function YarnPackage(){
 function Device(){
   cat $AFYZHOME/Manage/device.js > node_modules/icqq/lib/core/device.js
 }
+function Parser(){
+  cat $AFYZHOME/Manage/parser.js > node_modules/lib/message/parser.js
+}
 #此处仅为传参所用，如果开发者不满意此缩写，可联系ArcticFox520更改。
 case $1 in
 YN)
@@ -122,6 +125,7 @@ YN)
   InstallMiaoPlugin
   YarnPackage
   Device
+  Parser
 ;;
 MZ)
   InstallMiaoYunzai
@@ -129,6 +133,7 @@ MZ)
   InstallMiaoPlugin
   PnpmPackage
   Device
+  Parser
 ;;
 TZ)
   InstallTRSSYunzai

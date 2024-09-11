@@ -39,7 +39,7 @@ then
 fi
 if CheckNetwork
 then
-  MirrorNum=("gh" "ghproxy" "kkgithub" "github" "error")
+  MirrorNum=("gh-proxy" "ghproxy" "gh" "kkgithub" "github" "error")
 else
   MirrorNum=("github")
 fi
@@ -48,6 +48,15 @@ do
   case ${i} in
   github)
     if git clone --depth=1 $1 $2
+    then
+      return 0
+    else
+      rm -rf $2
+    fi
+    ;;
+  gh-proxy)
+    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh-proxy.com/https://github.com|g')
+    if git clone --depth=1 ${GitUrl} $2
     then
       return 0
     else
