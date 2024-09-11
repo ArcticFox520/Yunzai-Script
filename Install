@@ -74,6 +74,12 @@ then
   then
     ErrorReturn
   fi
+elif grep -i -q "Manjaro" /etc/os-release
+then
+  if ! bash ../Linux/Manjaro
+  then
+    ErrorReturn
+  fi
 else
   echo -e ${red}暂时不受支持的发行版${background}
   exit 1
