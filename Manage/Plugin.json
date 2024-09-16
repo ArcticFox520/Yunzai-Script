@@ -678,5 +678,15 @@
     },
     "PluginName": "椰奶插件",
     "PackageName": "yenai-plguin"
+  },
+  "GT-Manual": {
+    "Author": "花里胡哨,寒暄",
+    "Introduction": "米游社手动验证。",
+    "Repository": {
+      "Gitee": "haanxuan/GT-Manual",
+      "Github": "No"
+    },
+    "PluginName": "GT插件",
+    "PackageName": "GT-Manual-plugin"
   }
 }
