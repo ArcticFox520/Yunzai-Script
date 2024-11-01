@@ -1,11 +1,6 @@
 #!/bin/env bash
 source ../config
 
-if ping -c 1 api.arcticfox.top 2>&1 > /dev/null
-then
-  curl -sL -o "/dev/null" https://api.arcticfox.top/add
-fi
-
 # VersionURL="https://raw.githubusercontent.com/ArcticFox520/Yunzai-Script/main/version"
 # if CheckNetwork
 # then
@@ -41,11 +36,11 @@ $(MenuSize) \
 3>&1 1>&2 2>&3)
 case ${Number} in
 1)
-  if StartType ${BotName} ${COMMAND} ${Pm2Name}
+  if StartType "${BotName}" "${COMMAND}" "${Pm2Name}"
   then
     if Error=$(ManageSession $(Session) start "${BotName}" "afyz ${BotName} start")
     then
-      if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
+      if ProgressBar "${BotName}" "${COMMAND}" "${Pm2Name}"
       then
         if ($(TUISoftware) --title "${TitleText}"  \
         --yes-button "打开日志" \
@@ -77,7 +72,7 @@ case ${Number} in
   fi
 ;;
 2)
-  if StartType ${BotName} ${COMMAND} ${Pm2Name}
+  if StartType "${BotName}" "${COMMAND}" "${Pm2Name}"
   then
     START "${StartCommand}" ${Pm2Name}
   else
@@ -85,14 +80,14 @@ case ${Number} in
   fi
 ;;
 3)
-  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  if CheckStatus "${BotName}" "${COMMAND}" "${Pm2Name}"
   then
     $(TUISoftware) --title "${TitleText}" \
     --msgbox "${BotName} [无法停止] \n原因: ${BotName} [未运行]" \
     $(MsgboxSize)
     SecondMenu
   else
-    if Error=$(StopBot ${BotName} ${COMMAND} ${Pm2Name})
+    if Error=$(StopBot "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
       $(TUISoftware) --title "${TitleText}" \
       --msgbox "${BotName} [停止成功]" \
@@ -107,16 +102,16 @@ case ${Number} in
   fi
 ;;
 4)
-  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  if CheckStatus "${BotName}" "${COMMAND}" "${Pm2Name}"
   then
     $(TUISoftware) --title "${TitleText}" \
     --msgbox "${BotName} [无法重启] \n原因: ${BotName} [未运行]" \
     $(MsgboxSize)
     SecondMenu
   else
-    if Error=$(RestartBot ${BotName} ${COMMAND} ${Pm2Name})
+    if Error=$(RestartBot "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
-      if ProgressBar ${BotName} ${COMMAND} ${Pm2Name}
+      if ProgressBar "${BotName}" "${COMMAND}" "${Pm2Name}"
       then
         if ($(TUISoftware) --title "${TitleText}"  \
         --yes-button "打开日志" \
@@ -149,14 +144,14 @@ case ${Number} in
   fi
 ;;
 5)
-  if CheckStatus ${BotName} ${COMMAND} ${Pm2Name}
+  if CheckStatus "${BotName}" "${COMMAND}" "${Pm2Name}"
   then
     $(TUISoftware) --title "${TitleText}" \
     --msgbox "${BotName} 日志 [无法打开] \n原因: ${BotName} [未运行]" \
     $(MsgboxSize)
     SecondMenu
   else
-    if ! Error=$(LogBot ${BotName} ${COMMAND} ${Pm2Name})
+    if ! Error=$(LogBot "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
       $(TUISoftware) --title "${TitleText}" \
       --msgbox "${BotName} [错误] \n原因: ${Error}" \
@@ -294,6 +289,10 @@ case ${Number} in
         COMMAND="Miao-Yun"
         StartCommand="node app"
         Pm2Name="Miao-Yunzai"
+        if CheckInstall MZ
+        then
+          SecondMenu
+        fi
         SecondMenu
       else
         MainMenu
@@ -322,6 +321,10 @@ case ${Number} in
         COMMAND="TRSS Yunzai"
         StartCommand="node app"
         Pm2Name="TRSS-Yunzai"
+        if CheckInstall TZ
+        then
+          SecondMenu
+        fi
         SecondMenu
       else
         MainMenu
@@ -350,7 +353,10 @@ case ${Number} in
         COMMAND="YZ-NEXT"
         StartCommand="node src/main"
         Pm2Name="yunzai-next"
-        SecondMenu
+        if CheckInstall YN
+        then
+          SecondMenu
+        fi
       else
         MainMenu
       fi

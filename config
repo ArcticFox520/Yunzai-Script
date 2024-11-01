@@ -10,6 +10,7 @@ white="\033[37m"
 background="\033[0m"
 token="\u0037\u0037\u0038\u0037\u0030\u0036\u0034\u0034\u0066\u0061\u0032\u0033\u0063\u0031"
 GithubMirror="https://mirrors.chenby.cn/"
+AFHOME=$AFYZHOME
 
 if [ -x /usr/local/NodeJS/bin/node ]
 then
@@ -27,14 +28,14 @@ function MenuTips(){
 }
 
 function gitclone(){
-if [ -d $2 ]
+if [ -d "$2" ]
 then
   echo -e ${red}目标路径已经存在${background}
   return 1
 fi
-if echo $1 | grep -q gitee
+if echo "$1" | grep -q gitee
 then
-  git clone --depth=1 $1 $2
+  git clone --depth=1 "$1" "$2"
   return 0
 fi
 if CheckNetwork
@@ -47,56 +48,56 @@ for i in ${MirrorNum[@]}
 do
   case ${i} in
   github)
-    if git clone --depth=1 $1 $2
+    if git clone --depth=1 "$1" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   gh-proxy)
-    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh-proxy.com/https://github.com|g')
-    if git clone --depth=1 ${GitUrl} $2
+    GitUrl=$(echo "$1" | sed 's|https://github.com|https://gh-proxy.com/https://github.com|g')
+    if git clone --depth=1 "${GitUrl}" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   gitclone)
-    GitUrl=$(echo $1 | sed 's|https://github.com|https://gitclone.com/github.com|g')
-    if git clone --depth=1 ${GitUrl} $2
+    GitUrl=$(echo "$1" | sed 's|https://github.com|https://gitclone.com/github.com|g')
+    if git clone --depth=1 "${GitUrl}" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   kkgithub)
-    GitUrl=$(echo $1 | sed 's|https://github.com|https://kkgithub.com|g')
-    if git clone --depth=1 ${GitUrl} $2
+    GitUrl=$(echo "$1" | sed 's|https://github.com|https://kkgithub.com|g')
+    if git clone --depth=1 "${GitUrl}" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   gh)
-    GitUrl=$(echo $1 | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
-    if git clone --depth=1 ${GitUrl} $2
+    GitUrl=$(echo "$1" | sed 's|https://github.com|https://gh.arcticfox.top/https://github.com|g')
+    if git clone --depth=1 "${GitUrl}" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   ghproxy)
-    GitUrl=$(echo $1 | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
-    if git clone --depth=1 ${GitUrl} $2
+    GitUrl=$(echo "$1" | sed 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g')
+    if git clone --depth=1 "${GitUrl}" "$2"
     then
       return 0
     else
-      rm -rf $2
+      rm -rf "$2"
     fi
     ;;
   error)
@@ -107,41 +108,54 @@ do
 done
 }
 
+function IncrementCounter(){
+  if [ -z ${count} ]
+  then
+    count=0
+  fi
+  ((count++))
+  case ${count} in
+    3)
+      count=0
+      return 1
+  esac
+  return 0
+}
+
 function Download(){
 file="$1"
 URL="$2"
 local i=0
-if wget --help | grep -q show-progress 
+DownloadStart(){
+  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
+  until ${Command}
+  do
+    if ! IncrementCounter
+    then
+      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
+      return 1
+    fi
+    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
+  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
+  return 0
+}
+if $(command -v wget > /dev/null 2>&1) && $(wget --help | grep -q show-progress)
 then
-  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
-  until wget -q --show-progress -O ${file} -c ${URL}
-  do
-    if [ ${i} == 3 ]
-    then
-      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
-      return 1
-    fi
-    i=$((${i}+1))
-    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
-    sleep 3s
-  done
-  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
-  return 0
+  Command="wget --quiet --show-progress --output-document="${file}" --continue "${URL}""
+  DownloadStart
+elif $(command -v curl > /dev/null 2>&1) && $(wget --help | grep -q progress-bar)
+then
+  Command="curl --output "${file}" --progress-bar --location --continue-at - "${URL}""
+  DownloadStart
+elif $(command -v wget > /dev/null 2>&1)
+then
+  Command="wget --output-document="${file}" --continue "${URL}""
+  DownloadStart
 else
-  echo -e ${blue}[${green}*${blue}] ${cyan}正在下载 ${yellow}${file}${cyan}${background}
-  until wget -O ${file} -c ${URL}
-  do
-    if [ ${i} == 3 ]
-    then
-      echo -e ${blue}[${red}*${blue}] ${cyan}错误次数过多 ${yellow}退出${background}
-      return 1
-    fi
-    i=$((i+1))
-    echo -e ${blue}[${red}*${blue}] ${cyan}下载失败 ${yellow}三秒后重试${background}
-    sleep 3s
-  done
-  echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
-  return 0
+  echo -e ${blue}[${red}*${blue}] ${cyan}无下载器.${background}
+  return 1
 fi
 }
 
@@ -155,7 +169,7 @@ if (( $HEIGHT <= 3 ));then
   exit
 fi
 if (( $WIDTH <= 0 ));then
-  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度过窄.${background}
   echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
@@ -171,7 +185,7 @@ if (( $HEIGHT <= 0 ));then
   exit
 fi
 if (( $WIDTH <= 0 ));then
-  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度度过窄.${background}
+  echo -e ${blue}[${red}*${blue}] ${cyan}您的屏幕宽度过窄.${background}
   echo -e ${blue}[${red}*${blue}] ${cyan}考虑缩小终端字体.${background}
   exit
 fi
@@ -187,10 +201,10 @@ x86_64|x64|amd64)
 	echo x64
 	;;
 *)
-	echo -e ${red}暂不支持的架构 ${cyan}$(dpkg --print-architecture)${background}
-	until read
+  echo -e ${blue}[${red}*${blue}] ${cyan}不支持的架构.${background}
+  until read
 	do
-	  echo -e ${red}暂不支持的架构 ${cyan}$(dpkg --print-architecture)${background}
+	  echo -e ${blue}[${red}*${blue}] ${cyan}不支持的架构.${background}
 	done
 esac
 }
@@ -201,12 +215,12 @@ ${white}————————————————————
     脚本运行出现${red}错误$white,请及时${blue}截图${white},保存报错信息,
     以与便开发者,${green}更好的${white}和${green}更快的${cyan}解决${white}问题.
 ${white}————————————————————${background}"
-read
+exit 1
 }
 
 function SelectRegion(){
-function Tips(){
-echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
+Tips(){
+echo && echo -en "
  ———————————————————
  ${cyan}请问您的设备所在位置是? 
     ${green}1${white}. 中国大陆 ${background}
@@ -214,19 +228,18 @@ echo && echo -en " ${cyan}Yunzai ${purple}一键安装管理脚本${background}
  ———————————————————
  ${cyan}请输入数字 ${white}[1-2]:${background} "
 }
- read -p "$(Tips)" num
- case ${num} in
- 1)
-  return 0
-  ;;
- 2)
-  return 1
-  ;;
- *)
-  echo -e ${red}输入错误 ${yellow}将保持默认 ${purple}中国大陆${background}
-  return 0
-  ;;
-  esac
+read -p "$(Tips)" num
+case ${num} in
+1)
+return 0
+;;
+2)
+return 1
+;;
+*)
+echo -e ${blue}[${red}*${blue}] ${cyan}输入错误 ${yellow}保持默认 ${purple}中国大陆.${background}
+return 0
+esac
 }
 
 function CheckNetwork(){
@@ -281,127 +294,121 @@ fi
 }
 
 function Session(){
-  jq .SelectManageSession $AFYZHOME/config.json | sed 's|"||g'
+  jq .SelectManageSession $AFHOME/config.json | sed 's|"||g'
 }
 
-function StopBot(){
-CheckStatus $1 $2 $3
+function Stop(){
+CheckStatus "$1" "$2" "$3"
 case $? in
 1)
-  if ManageSession tmux stop $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=tmux
   ;;
 2)
-  if ManageSession screen stop $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=screen
   ;;
 3)
-  if ManageSession pm2 stop $3
+  ManageSessionPKG=pm2
+  ;;
+4)
+  ManageSessionPKG=kill
+  ;;
+esac
+case ${ManageSessionPKG} in
+tmux|screen|pm2)
+  if ManageSession ${ManageSessionPKG} stop "$1"
   then
     return 0
   else
     return 1
   fi
   ;;
-4)
-  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep $2 | awk '{print $1}')
+kill)
+  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep "$2" | awk '{print $1}')
   kill -9 ${PID}
   ;;
 esac
 }
 
-function RestartBot(){
-CheckStatus $1 $2 $3
+function Restart(){
+CheckStatus "$1" "$2" "$3"
 case $? in
 1)
-  if ManageSession tmux restart $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=tmux
   ;;
 2)
-  if ManageSession screen restart $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=screen
   ;;
 3)
-  if ManageSession pm2 restart $3
+  ManageSessionPKG=pm2
+  ;;
+4)
+  ManageSessionPKG=kill
+  ;;
+esac
+case ${ManageSessionPKG} in
+tmux|screen|pm2)
+  if ManageSession ${ManageSessionPKG} restart "$3"
   then
     return 0
   else
     return 1
   fi
   ;;
-4)
-  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep $2 | awk '{print $1}')
+kill)
+  PID=$(ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep "$2" | awk '{print $1}')
   kill -9 ${PID}
-  START $1 $3
+  START "$1" "$3"
   ;;
 esac
 }
 
-function LogBot(){
-CheckStatus $1 $2 $3
+function Log(){
+CheckStatus "$1" "$2" "$3"
 case $? in
 1)
-  if ManageSession tmux log $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=tmux
   ;;
 2)
-  if ManageSession screen log $1
-  then
-    return 0
-  else
-    return 1
-  fi
+  ManageSessionPKG=screen
   ;;
 3)
-  if ManageSession pm2 log $3
+  ManageSessionPKG=pm2
+  ;;
+4)
+  ManageSessionPKG=kill
+  ;;
+esac
+case ${ManageSessionPKG} in
+tmux|screen|pm2)
+  if ManageSession ${ManageSessionPKG} log "$3"
   then
     return 0
   else
     return 1
   fi
   ;;
-4)
-  echo $1 [前台] 启动
+kill)
+  echo "$1 [前台] 启动"
   return 1
   ;;
 esac
 }
 
 function PsAll(){
-  ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep -q $1
+  ps all | sed '/grep/d' | sed '/dialog/d' | sed '/whiptail/d' | grep -q "$1"
 }
 
 function CheckStatus(){
-if tmux ls 2>&1 | grep -q $1
+if tmux ls 2>&1 | grep -q "$1"
 then
   return 1
-elif screen -ls 2>&1 | grep -q $1
+elif screen -ls 2>&1 | grep -q "$1"
 then
   return 2
-elif pm2 list 2>&1 | sed '/stopped/d' | grep -q $3
+elif pm2 list 2>&1 | sed '/stopped/d' | grep -q "$3"
 then
   return 3
-elif PsAll $2
+elif PsAll "$2"
 then
   return 4
 else
@@ -410,7 +417,7 @@ fi
 }
 
 function StartType(){
-CheckStatus $1 $2 $3
+CheckStatus "$1" "$2" "$3"
 case $? in
 1)
   $(TUISoftware) --title "AF-IdentifyType" \
@@ -440,139 +447,79 @@ esac
 }
 
 function ManageSession(){
-case $1 in
+case "$1" in
 tmux)
-  case $2 in
+  case "$2" in
     start)
-      if tmux new -s $3 -d "$4" > /dev/null
-      then
-        return 0
-      else
-        return 1
-      fi
+      tmux new -s "$3" -d "$4" > /dev/null
+      return $?
     ;;
     stop)
-      if tmux kill-session -t $3 > /dev/null
-      then
-        return 0
-      else
-        return 1
-      fi
+      tmux kill-session -t "$3" > /dev/null
+      return $?
     ;;
     restart)
-      if tmux kill-session -t $3 && tmux new -s $3 -d "$4" > /dev/null
-      then
-        return 0
-      else
-        return 1
-      fi
+      tmux kill-session -t "$3" && tmux new -s "$3" -d "$4" > /dev/null
+      return $?
     ;;
     log)
-      if tmux attach -t $3 > /dev/null
-      then
-        return 0
-      else
-        return 1
-      fi
+      tmux attach -t "$3" > /dev/null
+      return $?
     ;;
     list)
-      if tmux ls | grep -q $3
-      then
-        return 0
-      else
-        return 1
-      fi
+      tmux ls | grep -q "$3"
+      return $?
     ;;
   esac
 ;;
 screen)
-  case $2 in
+  case "$2" in
     start)
-      if screen -S $3 -d -m bash -c "$4"
-      then
-        return 0
-      else
-        return 1
-      fi
+      screen -S "$3" -d -m bash -c "$4"
+      return $?
       ;;
     stop)
-      Session=$(screen -ls | grep $3 | awk '{print $1}')
-      if screen -X -S ${Session} quit
-      then
-        return 0
-      else
-        return 1
-      fi
+      Session=$(screen -ls | grep "$3" | awk '{print $1}')
+      screen -X -S ${Session} quit
+      return $?
       ;;
     restart)
-      Session=$(screen -ls | grep $3 | awk '{print $1}')
-      if screen -X -S ${Session} quit && screen -S ${Session} -d -m bash -c "$4"
-      then
-        return 0
-      else
-        return 1
-      fi
+      Session=$(screen -ls | grep "$3" | awk '{print $1}')
+      screen -X -S ${Session} quit && screen -S ${Session} -d -m bash -c "$4"
+      return $?
       ;;
     log)
-      Session=$(screen -ls | grep $3 | awk '{print $1}')
-      if screen -r ${Session}
-      then
-        return 0
-      else
-        return 1
-      fi
+      Session=$(screen -ls | grep "$3" | awk '{print $1}')
+      screen -r ${Session}
+      return $?
       ;;
     list)
-      if screen -ls | grep -q $3
-      then
-        return 0
-      esle
-        return 1
-      fi
+      screen -ls | grep -q "$3"
+      return $?
       ;;
   esac
 ;;
 pm2)
   case $2 in
     start)
-      if pm2 start --name $3 "$4"
-      then
-        return 0
-      else
-        return 1
-      fi
+      pm2 start --name $3 "$4"
+      return $?
     ;;
     stop)
-      if pm2 stop $3
-      then
-        return 0
-      else
-        return 1
-      fi
+      pm2 stop "$3"
+      return $?
     ;;
     restart)
-      if pm2 stop $3 && pm2 start --name $3 "$4"
-      then
-        return 0
-      else
-        return 1
-      fi
+      pm2 stop "$3" && pm2 start --name $3 "$4"
+      return $?
     ;;
     log)
-      if pm2 logs $3 | sed '/PM2/d'
-      then
-        return 0
-      else
-        return 1
-      fi
+      pm2 logs "$3" | sed '/PM2/d'
+      return $?
     ;;
     list)
-      if pm2 list
-      then
-        return 0
-      else
-        return 1
-      fi
+      pm2 list
+      return $?
     ;;
   esac
 ;;
@@ -624,12 +571,12 @@ function START(){
   local Command="$1"
   ${Command}
   Pm2List=$(pm2 list 2>&1)
-  if echo ${Pm2List} | grep -q $2
+  if echo ${Pm2List} | grep -q "$2"
   then
-    if ! $(pm2 list 2>&1 | grep $2 | grep -q stopped)
+    if ! $(pm2 list 2>&1 | grep "$2" | grep -q stopped)
     then
-      pm2 delete $2 > /dev/null 2>&1
-      START "$1" $2
+      pm2 delete "$2" > /dev/null 2>&1
+      START "$1" "$2"
     fi
   fi
 }
@@ -637,7 +584,7 @@ function START(){
 function ProgressBar(){
   {
     i=0
-    while CheckStatus $1 $2 $3
+    while CheckStatus "$1" "$2" "$3"
     do
       echo $((i++))
       if echo ${i} | grep -q 100
@@ -665,7 +612,7 @@ function CheckPath(){
       return 0
     elif [ -d "$HOME/fox@bot/${i}/node_modules" ]
     then
-      export BotPath="$HOME/fox@bot/${i}"
+      export BotPath="$HOME/fox@bot/${i}/node_modules"
       cd "$HOME/fox@bot/${i}"
       return 0
     elif grep -q true ../config.json
