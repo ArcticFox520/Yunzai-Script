@@ -71,4 +71,4 @@
 ## 支持
 | Nickname |
 | :--------: |
-[爱发电](https://afdian.com/a/baihu433) |
+[爱发电](https://afdian.com/a/arcticfox520) |
