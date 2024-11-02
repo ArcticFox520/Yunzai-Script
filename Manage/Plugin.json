@@ -688,5 +688,25 @@
     },
     "PluginName": "GT插件",
     "PackageName": "GT-Manual-plugin"
+  },
+  "Micro-Plugin": {
+    "Author": "V2233",
+    "Introduction": "提供便捷的WebUI",
+    "Repository": {
+      "Gitee": "No",
+      "Github": "V2233/micro-plugin"
+    },
+    "PluginName": "小微插件",
+    "PackageName": "yunzai-micro-plugin"
+  },
+  "yunzai-plugin-deer-pipe": {
+    "Author": "zhiyu",
+    "Introduction": "本地或远程文本语音合成，支持从任意音源即时学习并推理合成语音",
+    "Repository": {
+      "Gitee": "kyrzy0416/yunzai-plugin-deer-pipe",
+      "Github": "zhiyu1998/yunzai-plugin-deer-pipe"
+    },
+    "PluginName": "鹿管插件",
+    "PackageName": "yunzai-plugin-deer-pipe"
   }
 }

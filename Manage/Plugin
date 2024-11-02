@@ -264,7 +264,7 @@ then
   if ($(TUISoftware) --title "${TitleText}"  \
   --yes-button "安装" \
   --no-button "返回" \
-  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}" \
+  --yesno "插件名称: ${PluginName}\n插件作者: ${Author}\n插件介绍: ${Introduction}\n插件仓库: ${GitURL}" \
   $(MsgboxSize))
   then
     PluginName="$(eval $(echo "jq -r '.[\"${i}\"].PluginName' ${PluginListFile}"))"

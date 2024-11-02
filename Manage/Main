@@ -87,7 +87,7 @@ case ${Number} in
     $(MsgboxSize)
     SecondMenu
   else
-    if Error=$(StopBot "${BotName}" "${COMMAND}" "${Pm2Name}")
+    if Error=$(Stop "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
       $(TUISoftware) --title "${TitleText}" \
       --msgbox "${BotName} [停止成功]" \
@@ -109,7 +109,7 @@ case ${Number} in
     $(MsgboxSize)
     SecondMenu
   else
-    if Error=$(RestartBot "${BotName}" "${COMMAND}" "${Pm2Name}")
+    if Error=$(Restart "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
       if ProgressBar "${BotName}" "${COMMAND}" "${Pm2Name}"
       then
@@ -151,7 +151,7 @@ case ${Number} in
     $(MsgboxSize)
     SecondMenu
   else
-    if ! Error=$(LogBot "${BotName}" "${COMMAND}" "${Pm2Name}")
+    if ! Error=$(Log "${BotName}" "${COMMAND}" "${Pm2Name}")
     then
       $(TUISoftware) --title "${TitleText}" \
       --msgbox "${BotName} [错误] \n原因: ${Error}" \
