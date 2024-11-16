@@ -13,12 +13,12 @@ then
 fi
 if CheckNetwork
 then
-  NodeVersion="https://mirrors.ustc.edu.cn/node/latest-iron/"
+  NodeVersionURL="https://mirrors.ustc.edu.cn/node/latest-iron/"
 else
-  NodeVersion="https://nodejs.org/dist/latest-iron/"
+  NodeVersionURL="https://nodejs.org/dist/latest-iron/"
 fi
 echo -e ${yellow}正在获取 ${cyan}NodeJS版本号${background}
-until NodeVersion="$(curl ${NodeVersion} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}')"
+until NodeVersion="$(curl -L ${NodeVersionURL} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}')"
 do
   echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
   sleep 3s
