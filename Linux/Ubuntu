@@ -48,7 +48,7 @@ then
   KeyURLList=("keyserver.arcticfox.top" "keyserver.ubuntu.com" "pgp.mit.edu")
   for KeyURL in ${KeyURLList}
   do
-    rm ${GpgFileURL} > /dev/nll
+    rm ${GpgFilePath} > /dev/nll 2>&1
     GpgFileURL="https://${KeyURL}/pks/lookup?op=get&search=0x5301fa4fd93244fbc6f6149982bb6851c64f6880"
     if Download xtradeb-ubuntu-apps.gpg ${GpgFileURL}
     then
