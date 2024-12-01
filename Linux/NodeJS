@@ -18,7 +18,7 @@ else
   NodeVersionURL="https://nodejs.org/dist/latest-iron/"
 fi
 echo -e ${yellow}正在获取 ${cyan}NodeJS版本号${background}
-until NodeVersion="$(curl -L ${NodeVersionURL} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}' | awk '{print $1}')"
+until NodeVersion="$(curl -L ${NodeVersionURL} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}' | tail -n 1)"
 do
   echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
   sleep 3s
