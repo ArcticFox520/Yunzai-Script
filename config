@@ -141,11 +141,11 @@ DownloadStart(){
   echo -e ${blue}[${green}*${blue}] ${cyan}下载完成.${background}
   return 0
 }
-if $(command -v wget > /dev/null 2>&1) && $(wget --help | grep -q show-progress)
+if $(command -v wget > /dev/null 2>&1) && $(wget --help all | grep -q show-progress)
 then
   Command="wget --quiet --show-progress --output-document="${file}" --continue "${URL}""
   DownloadStart
-elif $(command -v curl > /dev/null 2>&1) && $(wget --help | grep -q progress-bar)
+elif $(command -v curl > /dev/null 2>&1) && $(curl --help all | grep -q progress-bar)
 then
   Command="curl --output "${file}" --progress-bar --location --continue-at - "${URL}""
   DownloadStart

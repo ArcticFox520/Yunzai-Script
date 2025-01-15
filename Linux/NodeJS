@@ -11,32 +11,37 @@ then
     apt -y autoremove nodejs
   fi
 fi
+
 if CheckNetwork
 then
-  NodeVersionURL="https://mirrors.ustc.edu.cn/node/latest-iron/"
+  NodeVersionURL="https://registry.npmmirror.com/-/binary/node/latest-iron/"
+  echo -e ${yellow}正在获取 ${cyan}NodeJS版本号${background}
+  until NodeVersion="$(curl -L ${NodeVersionURL} | jq . | grep .pkg | awk -F 'node-|\.pkg' '{print $2}' | head -n 1)"
+  do
+    echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
 else
   NodeVersionURL="https://nodejs.org/dist/latest-iron/"
+  echo -e ${yellow}正在获取 ${cyan}NodeJS版本号${background}
+  until NodeVersion="$(curl -L ${NodeVersionURL} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}' | head -n 1)"
+  do
+    echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
+    sleep 3s
+  done
 fi
-echo -e ${yellow}正在获取 ${cyan}NodeJS版本号${background}
-until NodeVersion="$(curl -L ${NodeVersionURL} | grep .pkg | awk -F 'node-|\.pkg' '{print $2}')"
-do
-  echo -e ${cyan}获取失败 ${yellow}三秒后重试${background}
-  sleep 3s
-done
 
-for i in ${NodeVersion}
-do
-  if CheckNetwork
-  then
-    NodeJSURL="https://registry.npmmirror.com/-/binary/node/latest-iron/node-${i}-linux-$(Arch).tar.xz"
-  else
-    NodeJSURL="https://nodejs.org/dist/latest-iron/node-${i}-linux-$(Arch).tar.xz"
-  fi
-  if Download NodeJS.tar.xz ${NodeJSURL}
-  then
-    break
-  fi
-done
+if CheckNetwork
+then
+  NodeJSURL="https://registry.npmmirror.com/-/binary/node/latest-iron/node-${NodeVersion}-linux-$(Arch).tar.xz"
+else
+  NodeJSURL="https://nodejs.org/dist/latest-iron/node-${NodeVersion}-linux-$(Arch).tar.xz"
+fi
+
+if Download NodeJS.tar.xz ${NodeJSURL}
+then
+  break
+fi
 
 mkdir NodeJS
 if ! pv NodeJS.tar.xz | tar -Jxf - -C NodeJS
