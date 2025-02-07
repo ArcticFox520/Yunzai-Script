@@ -201,21 +201,22 @@ then
   mkdir -p $HOME/AF-Proot/${FOLDER}
 fi
 
-for Download_URL in ${URL[@]}
+URL=( \
+$TUNA_URL \
+$NJU_URL \
+$BFSU_URL)
+
+for i in ${URL[@]}
 do
-  for Download_Source in ${Site[@]}
-  do
-    date=$(curl ${Download_URL} | grep -oP '(?<=title=")[^"]+(?=">)' | tail -n 1)
-    if Download rootfs.tar.xz "${Download_URL}/${date}/rootfs.tar.xz"
-    then
-      mv -f rootfs.tar.xz $HOME/AF-Proot/${RootfsName}
-      break 2
-    else
-      rm $HOME/AF-Proot/${RootfsName}
-      echo -e ${blue}[${yellow}*${blue}] ${red}下载出错${cyan} 更换下载源为 ${purple}${Download_Source}${cyan}${background}
-      echo -e ${blue}[${green}*${blue}] ${yellow}重试中.${background}
-    fi
-  done
+  date=$(curl ${i} | grep -oP '(?<=title=")[^"]+(?=">)' | tail -n 1)
+  if Download rootfs.tar.xz "${i}/${date}/rootfs.tar.xz"
+  then
+    mv -f rootfs.tar.xz $HOME/AF-Proot/${RootfsName}
+    break 2
+  else
+    rm $HOME/AF-Proot/${RootfsName}
+    echo -e ${blue}[${green}*${blue}] ${yellow}重试中.${background}
+  fi
 done
 
 if [ -e $HOME/AF-Proot/${RootfsName} ]
