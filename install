@@ -15,7 +15,7 @@ echo $((RANDOM % 3))
 
 function Termux(){
 case $(Random) in
-1)
+0)
   if ! am start com.miHoYo.Yuanshen/com.miHoYo.GetMobileInfo.MainActivity
   then
     if ! am start -a com.miHoYo.cloudgames.ys/com.mihoyo.cloudgame.ui.SplashActivity
@@ -24,7 +24,7 @@ case $(Random) in
     fi
   fi
   ;;
-2)
+1)
   if ! am start com.miHoYo.hkrpg/com.mihoyo.combosdk.ComboSDKActivity
   then
     if ! am start com.miHoYo.cloudgames.hkrpg/com.mihoyo.cloudgame.ui.SplashActivity
@@ -33,7 +33,7 @@ case $(Random) in
     fi
   fi
   ;;
-3)
+2)
   if ! am start com.miHoYo.Nap/com.mihoyo.combosdk.ComboSDKActivity
   then
     am start -a android.intent.action.VIEW -d "https://zzz.mihoyo.com"
